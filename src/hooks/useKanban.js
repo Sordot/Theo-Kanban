@@ -20,7 +20,6 @@ export const useKanban = (initialData) => {
     
         //get unique task id
         const newTask = {
-          // eslint-disable-next-line react-hooks/purity
           id: `task-${Date.now()}`,
           text: content
         }
