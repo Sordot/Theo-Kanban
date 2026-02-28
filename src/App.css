@@ -12,6 +12,11 @@
     margin-bottom: 15px;
 }
 
+.column-controls {
+    display: flex;
+    gap: 8px;
+}
+
 .kanban-column {
     background-color: #ebecf0;
     border-radius: 10px;
@@ -78,3 +83,38 @@
     color: #cc0000;
     transform: scale(1.2);
 }
+
+.add-column-btn {
+    background-color: rgba(235, 236, 240, 0.5);
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    min-width: 300px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.add-column-btn:hover {
+    background-color: #ebecf0;
+    border-color: #007bff;
+    color: #007bff;
+}
+
+.delete-column-btn {
+    background: none;
+    border: none;
+    color: #888;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.delete-column-btn:hover {
+    color: #ff4d4d;
+}
+
