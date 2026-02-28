@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   DndContext,
-  closestCenter,
+  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -15,6 +15,7 @@ import {
 } from '@dnd-kit/sortable'
 import './App.css'
 import SortableTask from './components/SortableTask'
+import DroppableContainer from './components/DroppableContainer'
 
 function App() {
 
@@ -63,10 +64,15 @@ function App() {
     const overID = over.id
 
     setColumns((prev) => {
-      //find the column where the drag is happening
+      //find the column where task is coming from
       const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
-      //if item is dropped in the same column
-      if (activeColumn && activeColumn.tasks.some(task => task.id === overID)) {
+      //find the column where task is being placed
+      const overColumn = prev.find((column => column.id === overID || column.tasks.some((task) => task.id === overID)))
+
+      if (!activeColumn || !overColumn) return prev
+      
+      //CASE: A - if item is dropped in the same column
+      if (activeColumn.id === overColumn.id) {
         const oldIndex = activeColumn.tasks.findIndex(task => task.id === activeID)
         const newIndex = activeColumn.tasks.findIndex(task => task.id === overID)
 
@@ -77,25 +83,79 @@ function App() {
           return column
         })
       }
-      return prev
+
+      //CASE B: - moving item to a different column
+      const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
+
+      return prev.map((column) => {
+        //remove from source column array
+        if (column.id === activeColumn.id) {
+          return {
+            ...column, tasks: column.tasks.filter((task) => task.id !== activeID)
+          }
+        }
+        //add to destination column array
+        if (column.id === overColumn.id) {
+          return {
+            ...column, tasks: [...column.tasks, activeTask]
+          }
+        }
+        return column
+      })
     }) 
+  }
+
+  const handleDragOver = (event) => {
+    const {active, over} = event
+    if (!over) return
+
+    const activeID = active.id
+    const overID = over.id
+
+    setColumns((prev) => {
+      const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
+      const overColumn = prev.find(column => column.id === overID || column.tasks.some((task) => task.id === overID))
+
+      if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) {
+        return prev
+      }
+
+      const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
+      const overTasks = overColumn.tasks
+
+      // Calculate the new index in the destination column
+      const overIndex = overTasks.findIndex(t => t.id === overID)
+      let newIndex = overIndex >= 0 ? overIndex : overTasks.length
+
+      return prev.map(column => {
+        if (column.id === activeColumn.id) {
+          return {...column, tasks: column.tasks.filter((task) => task.id !== activeID)}
+        }
+        if (column.id === overColumn.id) {
+          const newTasks = [...column.tasks]
+          newTasks.splice(newIndex, 0, activeTask) //Insert selected task at new index
+          return {...column, tasks: newTasks}
+        }
+        return column
+      })
+    })
   }
 
   return (
     <div className='kanban-container'>
       <h1>Welcome to Theo Kanban!</h1>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
         <div className='kanban-board'>
           {/* map through the kanban columns */}
-          {columns.map((column) => (
+          {columns && columns.map((column) => (
             <div className='kanban-column' key={column.id}>
               <div className="column-header">
                 <h3 className='column-title'>{column.title}</h3>
                 <button className='add-task-btn' onClick={() => addTask(column.id)}>+</button>
               </div>
               {/*now map each task for for each column*/}
-              <SortableContext items={column.tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-                <div className='task-list'>
+              <SortableContext id={column.id} items={column.tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
+                <DroppableContainer id={column.id} className='task-list'>
                   {column.tasks.map((task) => (
                     <SortableTask 
                       key={task.id}
@@ -105,14 +165,13 @@ function App() {
                       onDelete={deleteTask}
                     />
                   ))}
-                </div>
+                </DroppableContainer>
               </SortableContext>
             </div>
           ))}
         </div>
         </DndContext>  
-    </div>
-    
+    </div>   
   )
 }
 
