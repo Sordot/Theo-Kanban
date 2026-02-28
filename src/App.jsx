@@ -1,6 +1,19 @@
 import { useState } from 'react'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import './App.css'
-
 
 function App() {
 
@@ -15,13 +28,11 @@ function App() {
     //ask user for input
     const content = window.prompt('Task Description:')
     if (!content) return
-
     //update column with provided input
     const updatedColumns = columns.map(column => {
       if (column.id !== inputColumnID) return column
       return {...column, tasks: [...column.tasks, content]}
     })
-
     setColumns(updatedColumns)
   }
 
@@ -40,20 +51,23 @@ function App() {
       <div className='kanban-board'>
         {/* map through the kanban columns */}
         {columns.map((column) => (
-          <div key={column.id}>
-            <h3 className='column-title'>{column.title}</h3>
-            <button className='add-task-btn' onClick={() => addTask(column.id)}>+</button>
+          <div className='kanban-column' key={column.id}>
+            <div className="column-header">
+              <h3 className='column-title'>{column.title}</h3>
+              <button className='add-task-btn' onClick={() => addTask(column.id)}>+</button>
+            </div>
             {/*now map each task for for each column*/}
-            {column.tasks.map((task, index) => (
-              <div key={index} className='task-card'>
-                <span>{task}</span>
-                <button className='delete-btn' onClick={() => deleteTask(column.id, index)}>x</button>
-              </div>
-            ))}
+            <div className='task-list'>
+              {column.tasks.map((task, index) => (
+                <div key={index} className='task-card'>
+                  <span>{task}</span>
+                  <button className='delete-btn' onClick={() => deleteTask(column.id, index)}>x</button>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
-      </div>
-      
+      </div>  
     </div>
     
   )
