@@ -80,31 +80,31 @@ export const useKanban = (initialData) => {
     }
 
     const handleDragEnd = (event) => {
-    const {active, over} = event
-    if (!over) return
+      const {active, over} = event
+      if (!over) return
 
-    const activeID = active.id
-    const overID = over.id
+      const activeID = active.id
+      const overID = over.id
 
-    setColumns((prev) => {
-      //find the column where task is coming from
-      const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
-      //find the column where task is being placed
-      const overColumn = prev.find((column => column.id === overID || column.tasks.some((task) => task.id === overID)))
+      setColumns((prev) => {
+        //find the column where task is coming from
+        const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
+        //find the column where task is being placed
+        const overColumn = prev.find((column => column.id === overID || column.tasks.some((task) => task.id === overID)))
 
-      if (!activeColumn || !overColumn) return prev
-      
-      //CASE: A - if item is dropped in the same column
-      if (activeColumn.id === overColumn.id) {
-        const oldIndex = activeColumn.tasks.findIndex(task => task.id === activeID)
-        const newIndex = activeColumn.tasks.findIndex(task => task.id === overID)
+        if (!activeColumn || !overColumn) return prev
+        
+        //CASE: A - if item is dropped in the same column
+        if (activeColumn.id === overColumn.id) {
+          const oldIndex = activeColumn.tasks.findIndex(task => task.id === activeID)
+          const newIndex = activeColumn.tasks.findIndex(task => task.id === overID)
 
-        return prev.map(column => {
-          if (column.id === activeColumn.id) {
-            return {...column, tasks: arrayMove(column.tasks, oldIndex, newIndex)}
-          }
-          return column
-        })
+          return prev.map(column => {
+            if (column.id === activeColumn.id) {
+              return {...column, tasks: arrayMove(column.tasks, oldIndex, newIndex)}
+            }
+            return column
+          })
       }
 
       //CASE B: - moving item to a different column
@@ -125,7 +125,8 @@ export const useKanban = (initialData) => {
         }
         return column
       })
-    }) 
+    })
+    setActiveTask(null) 
   }
 
   const handleDragOver = (event) => {
@@ -163,7 +164,7 @@ export const useKanban = (initialData) => {
         return column
       })
     })
-    setActiveTask(null)
+    
   }
 
 

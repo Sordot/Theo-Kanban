@@ -1,7 +1,7 @@
 import {
   DndContext,
   DragOverlay,
-  closestCorners,
+  closestCenter,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -15,8 +15,8 @@ import { useKanban } from './hooks/useKanban'
 import Column from './components/Column'
 
 const DEFAULT_DATA = [
-    {id: 1, title: 'To Do', tasks: [{id:'t1', text:'Learn React', priority: 'high', description: 'Shake off the rust!'}, 
-                                    {id: 't2', text: "Set up project", priority: 'low', description: 'AI is OP'}]},
+    {id: 1, title: 'To Do', tasks: [{id:'t1', text:'Learn React', priority: 'high', description: 'Shake off the rust!', isNew: false}, 
+                                    {id: 't2', text: 'Set up project', priority: 'low', description: 'AI is OP', isNew: false}]},
     {id: 2, title: 'In Progress', tasks: []},
     {id: 3, title: 'Done', tasks: []}
   ]
@@ -28,14 +28,14 @@ function App() {
   } = useKanban(DEFAULT_DATA)
 
   const sensors = useSensors(
-    useSensor(PointerSensor, {activationConstraint: {distance: 5}}),
+    useSensor(PointerSensor, {activationConstraint: {distance: 8}}),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
   )
 
   return (
     <div className='kanban-container'>
       <h1>Welcome to Theo Kanban!</h1>
-      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
         <div className='kanban-board'>
           {/* map through the kanban columns */}
           {columns && columns.map((column) => (
@@ -48,12 +48,15 @@ function App() {
               onRemoveColumn={removeColumn}
             />
           ))}
-          <button className="add-column-btn" onClick={addColumn}> + Add Column</button>
+          <button className='add-column-btn' onClick={addColumn}> + Add Column</button>
         </div>
         <DragOverlay>
           {activeTask ? (
-            <div className="task-card dragging-overlay">
-              <span>{activeTask.text}</span>
+            <div className={`task-card dragging-overlay priority-${activeTask.priority}`}>
+              <div className='task-content'>
+                <span className='task-text'>{activeTask.text}</span>
+              </div>
+              
             </div>
           ) : null}
         </DragOverlay>

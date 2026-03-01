@@ -6,7 +6,11 @@ export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, 
     return (
         <div className='kanban-column' key={column.id}>
             <div className="column-header">
-                <h3 className='column-title'>{column.title}</h3>
+                <div className="column-title-container">
+                    <h3 className='column-title'>{column.title}</h3>
+                    <span className="task-count-badge">{column.tasks.length}</span>
+                </div>
+                
                 <div className="column-controls">
                     <button className='add-task-btn' onClick={() => onAddTask(column.id)}>+</button>
                     <button className="delete-column-btn" onClick={() => onRemoveColumn(column.id)}>x</button>

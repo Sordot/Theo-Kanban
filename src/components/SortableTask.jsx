@@ -17,9 +17,10 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
     } = useSortable({id, disabled: isEditing}) //stop dragging while typing
 
     const handleSave = () => {
-        const { ...finalData } = editData
+        const finalData = {...editData, isNew: false}
         onUpdate(columnID, id, finalData)
         setIsEditing(false)
+        
     }
 
     const handleKeyDown = (event) => {
@@ -72,8 +73,8 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
                     placeholder="Add a description..."
                 />
                 <div className="edit-actions">
-                    <button className="save-btn" onClick={handleSave}>Save</button>
-                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+                    <button className="save-btn" onClick={handleSave} onPointerDown={e => e.stopPropagation()}>Save Task</button>
+                    <button className="cancel-btn" onClick={() => setIsEditing(false)} onPointerDown={e => e.stopPropagation()}>Cancel</button>
                 </div>
             </div>
         )
@@ -88,7 +89,7 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
                     <button className="edit-btn"
                         onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}>
-                        ✎
+                        ✎ Edit
                         </button>
                     <button className='delete-btn' 
                         onPointerDown={(e) => e.stopPropagation()}
