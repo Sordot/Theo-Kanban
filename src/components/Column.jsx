@@ -2,7 +2,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import DroppableContainer from './DroppableContainer'
 import SortableTask from "./SortableTask"
 
-export default function Column ({column, onAddTask, onDeleteTask, onRemoveColumn}) {
+export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, onRemoveColumn}) {
     return (
         <div className='kanban-column' key={column.id}>
             <div className="column-header">
@@ -22,6 +22,7 @@ export default function Column ({column, onAddTask, onDeleteTask, onRemoveColumn
                     task={task}
                     columnID={column.id}
                     onDelete={onDeleteTask}
+                    onUpdate={onUpdateTask}
                 />
                 ))}
             </DroppableContainer>

@@ -62,10 +62,56 @@
     transition: opacity 0.2s ease;
 }
 
-.task-card:active {
-    cursor: grabbing;
-    opacity: 0.5;
-    transform: rotate(3deg);
+.task-card.editing {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    background: #fdfdfd;
+    border: 2px solid #007bff;
+    cursor: default;
+    animation: fadeIn 0.2s ease-out;
+    background-color: #f8faff;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.edit-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.edit-btn:hover {
+    opacity: 1;
+}
+
+.edit-input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 14px;
+}
+
+.edit-input.title {
+    font-weight: bold;
+}
+
+.edit-input.desc {
+    min-height: 80px;
+    resize: vertical;
+    font-size: 14px;
+    color: #555;
 }
 
 .add-task-btn {

@@ -24,11 +24,11 @@ const DEFAULT_DATA = [
 function App() {
 
   const { 
-    columns, activeTask, addTask, deleteTask, addColumn, removeColumn, handleDragOver, handleDragEnd 
+    columns, activeTask, addTask, updateTask, deleteTask, addColumn, removeColumn, handleDragOver, handleDragEnd 
   } = useKanban(DEFAULT_DATA)
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {activationConstraint: {distance: 5}}),
     useSensor(KeyboardSensor, {coordinateGetter: sortableKeyboardCoordinates})
   )
 
@@ -44,6 +44,7 @@ function App() {
               column={column}
               onAddTask={addTask}
               onDeleteTask={deleteTask}
+              onUpdateTask={updateTask}
               onRemoveColumn={removeColumn}
             />
           ))}

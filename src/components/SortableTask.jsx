@@ -1,7 +1,12 @@
+import { useState, useEffect } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-function SortableTask({id, task, columnID, onDelete}) {
+
+function SortableTask({id, task, columnID, onDelete, onUpdate}) {
+    const [isEditing, setIsEditing] = useState(task.isNew || false)
+    const [editData, setEditData] = useState({...task})
+
     const {
         attributes,
         listeners,
@@ -9,14 +14,60 @@ function SortableTask({id, task, columnID, onDelete}) {
         transform,
         transition,
         isDragging
-    } = useSortable({id: id})
+    } = useSortable({id, disabled: isEditing}) //stop dragging while typing
+
+    const handleSave = () => {
+        const { isNew, ...finalData } = editData
+        onUpdate(columnID, id, finalData)
+        setIsEditing(false)
+    }
+
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') handleSave()
+        if (event.key === 'Escape') setIsEditing(false)
+    } 
 
     const style = {
         transform: CSS.Transform.toString(transform), 
-        transition,
+        transition: isDragging ? 'none' : transition,
         opacity: isDragging ? 0.3 : 1 //fade placeholder to 0.3 when item is picked up
     }
 
+    if (isEditing) {
+        return (
+            <div ref={setNodeRef} style={style} className="task-card editing" onKeyDown={handleKeyDown}>
+                <input 
+                    className="edit-input title"
+                    value={editData.text}
+                    onPointerDown={e => e.stopPropagation()}
+                    onChange={e => setEditData({...editData, text: e.target.value})}
+                    placeholder="Task title..."
+                    autoFocus
+                />
+                <select 
+                    className="edit-input priority"
+                    value={editData.priority}
+                    onPointerDown={e => e.stopPropagation()}
+                    onChange={e => setEditData({...editData, priority: e.target.value})}
+                >
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <textarea 
+                    className="edit-input desc"
+                    value={editData.description}
+                    onPointerDown={e => e.stopPropagation()}
+                    onChange={e => setEditData({...editData, description: e.target.value})}
+                    placeholder="Add a description..."
+                />
+                <div className="edit-actions">
+                    <button className="save-btn" onClick={handleSave}>Save</button>
+                    <button className="cancel-btn" onClick={() => setIsEditing(false)}>Cancel</button>
+                </div>
+            </div>
+        )
+    }
     return (
         <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`task-card priority-${task.priority}`}>
             <div className="task-content">
@@ -24,7 +75,11 @@ function SortableTask({id, task, columnID, onDelete}) {
                     <span className={`priority-badge ${task.priority || 'medium'}`}>
                         {(task.priority || 'medium').toUpperCase()}
                     </span>
-                    <span className="task-date-created">{task.createdAt}</span>
+                    <button className="edit-btn"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}>
+                        ✎
+                        </button>
                     <button className='delete-btn' 
                         onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) =>{e.stopPropagation(); onDelete(columnID, id)}}>

@@ -26,20 +26,29 @@ export const useKanban = (initialData) => {
           text: content,
           priority: 'medium',
           description: '',
-          createdAt: new Date.toISOString()
+          isNew: true //trigger edit mode automatically
         }
         setColumns(columns.map(column => {
           if (column.id !== inputColumnID) return column
           return {...column, tasks: [...column.tasks, newTask]}
         }))
-      }
+    }
+
+    const updateTask = (columnID, taskID, updates) => {
+      setColumns(prev => prev.map(column => {
+        if (column.id !== columnID) return column
+        return {
+          ...column, tasks: column.tasks.map(task => task.id === taskID ? {...task, ...updates} : task)
+        }
+      }))
+    }
     
-      const deleteTask = (inputColumnID, taskID) => {
-        //filter the desired task index from the current array and return an updated array
-        setColumns(prevColumns => prevColumns.map(column => {
-          if (column.id !== inputColumnID) return column
-          return {...column, tasks: column.tasks.filter(task => task.id !== taskID)}
-        }))
+    const deleteTask = (inputColumnID, taskID) => {
+      //filter the desired task index from the current array and return an updated array
+      setColumns(prevColumns => prevColumns.map(column => {
+        if (column.id !== inputColumnID) return column
+        return {...column, tasks: column.tasks.filter(task => task.id !== taskID)}
+      }))
     }
 
     const addColumn = () => {
@@ -134,6 +143,7 @@ export const useKanban = (initialData) => {
       }
 
       const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
+      const cleanedTask = {...activeTask, isNew: false} //ensure the editing state is false as you drag&drop
       const overTasks = overColumn.tasks
 
       // Calculate the new index in the destination column
@@ -146,7 +156,7 @@ export const useKanban = (initialData) => {
         }
         if (column.id === overColumn.id) {
           const newTasks = [...column.tasks]
-          newTasks.splice(newIndex, 0, activeTask) //Insert selected task at new index
+          newTasks.splice(newIndex, 0, cleanedTask) //Insert selected task at new index
           return {...column, tasks: newTasks}
         }
         return column
@@ -156,5 +166,5 @@ export const useKanban = (initialData) => {
   }
 
 
-  return { columns, activeTask, addTask, deleteTask, addColumn, removeColumn, handleDragStart, handleDragOver, handleDragEnd}
+  return { columns, activeTask, addTask, updateTask, deleteTask, addColumn, removeColumn, handleDragStart, handleDragOver, handleDragEnd}
 }
