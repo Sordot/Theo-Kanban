@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 
 export const useKanban = (initialData) => {
@@ -42,22 +42,34 @@ export const useKanban = (initialData) => {
         }))
     }
 
-    const updateTask = (columnID, taskID, updates) => {
+    const updateTask = useCallback((columnID, taskID, updates) => {
       setColumns(prev => prev.map(column => {
-        if (column.id !== columnID) return column
+        if (column.id !== columnID) return column;
         return {
-          ...column, tasks: column.tasks.map(task => task.id === taskID ? {...task, ...updates, updatedAt: Date.now()} : task)
+          ...column, 
+          tasks: column.tasks.map(task => {
+                if (task.id === taskID) {
+                    // ROOT CAUSE FIX: Check if isNew is already false
+                    if (updates.isNew === false && task.isNew === false) {
+                        return task; 
+                    }
+                    return { ...task, ...updates, updatedAt: Date.now() };
+                }
+                return task;
+          })
         }
-      }))
-    }
+      }));
+    }, []);
     
-    const deleteTask = (inputColumnID, taskID) => {
-      //filter the desired task index from the current array and return an updated array
-      setColumns(prevColumns => prevColumns.map(column => {
-        if (column.id !== inputColumnID) return column
-        return {...column, tasks: column.tasks.filter(task => task.id !== taskID)}
-      }))
-    }
+    const deleteTask = useCallback((columnID, taskID) => {
+        setColumns(prev => prev.map(column => {
+            if (column.id !== columnID) return column;
+            return {
+                ...column,
+                tasks: column.tasks.filter(task => task.id !== taskID)
+            };
+        }));
+    }, []);
 
     const addColumn = () => {
         const title = newColumnTitle.trim()
@@ -142,6 +154,8 @@ export const useKanban = (initialData) => {
 
       //CASE B: - moving item to a different column
       const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
+      // eslint-disable-next-line no-unused-vars
+      const cleanedTask = {...activeTask, isNew: false}
 
       return prev.map((column) => {
         //remove from source column array

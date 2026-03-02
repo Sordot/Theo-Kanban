@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 
-function SortableTask({id, task, columnID, onDelete, onUpdate}) {
+const SortableTask = memo(({id, task, columnID, onDelete, onUpdate}) => {
     const [isEditing, setIsEditing] = useState(task.isNew || false)
     const [editData, setEditData] = useState({
         text: task.text || '', 
         description: task.description || '',
         priority: task.priority || ''
     })
+
+    // eslint-disable-next-line no-unused-vars
+    const { isNew } = task
+    const isNewTask = !!task.isNew
+
+    useEffect(() => {
+    if (isNewTask && !isEditing) {
+        const timer = setTimeout(() => {
+            onUpdate(columnID, id, { isNew: false });
+        }, 1000); // Matches your 1s CSS animation duration
+        
+        return () => clearTimeout(timer);
+    }
+        }, [isNewTask, isEditing, columnID, id, onUpdate]);
 
     const {
         attributes,
@@ -21,7 +35,7 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
     } = useSortable({id, disabled: isEditing}) //stop dragging while typing
 
     const handleSave = () => {
-        const finalData = {...editData, isNew: false}
+        const finalData = {...editData, isNew: true}
         onUpdate(columnID, id, finalData)
         setIsEditing(false)
     }
@@ -40,6 +54,15 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
             minute: '2-digit'
         })
     }
+
+    const cyclePriority = (e) => {
+      e.stopPropagation()
+      const levels = ['low', 'medium', 'high']
+      const currentIndex = levels.indexOf(task.priority || 'medium')
+      const nextPriority = levels[(currentIndex + 1) % levels.length]
+      
+      onUpdate(columnID, id, { ...task, priority: nextPriority })
+    };
 
     const style = {
         transform: CSS.Transform.toString(transform), 
@@ -83,10 +106,10 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
         )
     }
     return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`task-card priority-${task.priority}`}>
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners} className={`task-card priority-${task.priority} ${task.isNew ? 'is-new-flash' : ''}`}>
             <div className='task-content'>
                 <div className='task-header'>
-                    <span className={`priority-badge ${task.priority || 'medium'}`}>
+                    <span className={`priority-badge ${task.priority || 'medium'}`} onClick={cyclePriority} style={{cursor: 'pointer'}}title={'Click to cycle priority'}>
                         {(task.priority || 'medium').toUpperCase()}
                     </span>
                     <button className='edit-btn'
@@ -110,6 +133,6 @@ function SortableTask({id, task, columnID, onDelete, onUpdate}) {
             </div>
         </div>
     )
-}
+})
 
 export default SortableTask

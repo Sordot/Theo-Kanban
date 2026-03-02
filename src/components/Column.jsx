@@ -16,20 +16,26 @@ export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, 
                     <button className="delete-column-btn" onClick={() => onRemoveColumn(column.id)}>x</button>
                 </div>
             </div>
+            {column.tasks.length === 0 && (
+                <div className="empty-column-placeholder">
+                    <h4>No tasks here yet.</h4>
+                    <p>Drop something or click +</p>
+                </div>
+            )}
             {/* map each task for for each column */}
             <SortableContext id={column.id} items={column.tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
-            <DroppableContainer id={column.id} className='task-list'>
-                {column.tasks.map((task) => (
-                <SortableTask 
-                    key={task.id}
-                    id={task.id}
-                    task={task}
-                    columnID={column.id}
-                    onDelete={onDeleteTask}
-                    onUpdate={onUpdateTask}
-                />
-                ))}
-            </DroppableContainer>
+                <DroppableContainer id={column.id} className='task-list'>
+                    {column.tasks.map((task) => (
+                    <SortableTask 
+                        key={task.id}
+                        id={task.id}
+                        task={task}
+                        columnID={column.id}
+                        onDelete={onDeleteTask}
+                        onUpdate={onUpdateTask}
+                    />
+                    ))}
+                </DroppableContainer>
             </SortableContext>
         </div>
     )
