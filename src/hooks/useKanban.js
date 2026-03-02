@@ -3,10 +3,17 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 export const useKanban = (initialData) => {
 
-    const [columns, setColumns] = useState(() => {
-        const saved = localStorage.getItem('theo-kanban-data')
-        return saved ? JSON.parse(saved) : initialData
-    })
+    const [boards, setBoards] = useState(() => {
+        const saved = localStorage.getItem('theo-kanban-boards');
+        return saved ? JSON.parse(saved) : initialData;
+    });
+    const [activeBoardID, setActiveBoardID] = useState(boards[0].id)
+
+    //get the columns for the currently selected board
+    const activeBoard = boards.find(board => board.id === activeBoardID)
+    const columns = activeBoard ? activeBoard.columns : []
+
+    
 
     const [activeTask, setActiveTask] = useState(null)
 
@@ -19,13 +26,51 @@ export const useKanban = (initialData) => {
       data: null // stores IDs needed for deletion
     })
 
+    const [modalRenameValue, setModalRenameValue] = useState('')
+
     useEffect(() => {
-        localStorage.setItem('theo-kanban-data', JSON.stringify(columns))
-    }, [columns])
+        localStorage.setItem('theo-kanban-boards', JSON.stringify(boards))
+    }, [boards])
 
     
 
     //CRUD UTILITIES
+    const addBoard = () => {
+      const newBoardID = `board-${Date.now()}`
+      const newBoard = {
+        id: newBoardID,
+        name: '🌱 Untitled Project',
+        columns: [
+          { id: `col-${Date.now()}-1`, title: 'To Do', tasks: [] },
+          { id: `col-${Date.now()}-2`, title: 'In Progress', tasks: [] },
+          { id: `col-${Date.now()}-3`, title: 'Done', tasks: [] }
+        ]
+      }
+      setBoards(prev => [...prev, newBoard]);
+      setActiveBoardID(newBoardID); // Automatically switch to the new board
+    }
+
+    const updateBoard = (boardID, updates) => {
+      setBoards(prev => prev.map(board => 
+          board.id === boardID ? { ...board, ...updates } : board
+      ));
+    };
+
+    const deleteBoard = (boardID) => {
+      if (boards.length <= 1) {
+        alert("You must have at least one board!");
+        return;
+      }
+
+        setBoards(prev => {
+            const updatedBoards = prev.filter(board => board.id !== boardID);
+            if (activeBoardID === boardID) {
+                setActiveBoardID(updatedBoards[0].id);
+            }
+            return updatedBoards;
+        });
+    };
+
     const addTask = (inputColumnID) => {
         //get unique task id
         const newTask = {
@@ -36,40 +81,55 @@ export const useKanban = (initialData) => {
           isNew: true, //trigger edit mode automatically
           updatedAt: Date.now()
         }
-        setColumns(columns.map(column => {
-          if (column.id !== inputColumnID) return column
-          return {...column, tasks: [...column.tasks, newTask]}
-        }))
+        setBoards(prevBoards => prevBoards.map(board => {
+            if (board.id !== activeBoardID) return board;
+            return {
+                ...board,
+                columns: board.columns.map(col => 
+                    col.id === inputColumnID ? { ...col, tasks: [...col.tasks, newTask] } : col
+                )
+            };
+        }));
     }
 
     const updateTask = useCallback((columnID, taskID, updates) => {
-      setColumns(prev => prev.map(column => {
-        if (column.id !== columnID) return column;
+      setBoards(prevBoards => prevBoards.map(board => {
+        if (board.id !== activeBoardID) return board;
         return {
-          ...column, 
-          tasks: column.tasks.map(task => {
-                if (task.id === taskID) {
-                    // ROOT CAUSE FIX: Check if isNew is already false
-                    if (updates.isNew === false && task.isNew === false) {
-                        return task; 
-                    }
-                    return { ...task, ...updates, updatedAt: Date.now() };
-                }
-                return task;
+          ...board, 
+          columns: board.columns.map(column => {
+                if (column.id !== columnID) return column;
+                return {
+                  ...column, 
+                  tasks: column.tasks.map(task => {
+                        if (task.id === taskID) {
+                            if (updates.isNew === false && task.isNew === false) return task; 
+                            return { ...task, ...updates, updatedAt: Date.now() };
+                        }
+                        return task;
+                  })
+                };
           })
-        }
+        };
       }));
-    }, []);
+    }, [activeBoardID]);
     
     const deleteTask = useCallback((columnID, taskID) => {
-        setColumns(prev => prev.map(column => {
-            if (column.id !== columnID) return column;
+        setBoards(prevBoards => prevBoards.map(board => {
+            // Only update columns if this is the board we are currently viewing
+            if (board.id !== activeBoardID) return board;
             return {
-                ...column,
-                tasks: column.tasks.filter(task => task.id !== taskID)
+                ...board,
+                columns: board.columns.map(col => {
+                    if (col.id !== columnID) return col;
+                    return {
+                        ...col,
+                        tasks: col.tasks.filter(task => task.id !== taskID)
+                    };
+                })
             };
         }));
-    }, []);
+    }, [activeBoardID]);
 
     const addColumn = () => {
         const title = newColumnTitle.trim()
@@ -82,12 +142,18 @@ export const useKanban = (initialData) => {
           tasks: []
         }
     
-        setColumns([...columns, newColumn])
+        setBoards(prevBoards => prevBoards.map(board => {
+            if (board.id !== activeBoardID) return board
+            return {...board, columns: [...board.columns, newColumn]};
+        }));
         closeColumnEditor()
     }
 
     const removeColumn = (columnID) => {
-      setColumns(columns.filter(column => column.id !== columnID))
+      setBoards(prevBoards => prevBoards.map(board => {
+          if (board.id !== activeBoardID) return board;
+          return {...board, columns: board.columns.filter(col => col.id !== columnID)};
+      }));
     }
 
     const openColumnEditor = () => setIsAddingColumn(true)
@@ -106,15 +172,28 @@ export const useKanban = (initialData) => {
     }
 
     const confirmDelete = () => {
-      const {type, data} = modalConfig
+      const { type, data } = modalConfig;
 
       if (type === 'column') {
-        removeColumn(data.columnID)
+          removeColumn(data.columnID);
       } else if (type === 'task') {
-        deleteTask(data.columnID, data.taskID)
+          deleteTask(data.columnID, data.taskID);
+      } else if (type === 'board') {
+          deleteBoard(data.boardID); // Uses your existing deleteBoard logic
+      } else if (type === 'renameBoard') {
+          updateBoard(data.boardID, { name: modalRenameValue }); // Uses your updateBoard logic
       }
-      closeModal()
-    }
+      closeModal();
+    };
+
+    const openRenameModal = (board) => {
+      setModalRenameValue(board.name);
+      setModalConfig({ 
+          isOpen: true, 
+          type: 'renameBoard', 
+          data: { boardID: board.id } 
+      });
+    };
 
     //Drag and Drop Handlers
     const handleDragStart = (event) => {
@@ -125,56 +204,42 @@ export const useKanban = (initialData) => {
     }
 
     const handleDragEnd = (event) => {
-      const {active, over} = event
-      if (!over) return
+      const {active, over} = event;
+      if (!over) return;
 
-      const activeID = active.id
-      const overID = over.id
+      const activeID = active.id;
+      const overID = over.id;
 
-      setColumns((prev) => {
-        //find the column where task is coming from
-        const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
-        //find the column where task is being placed
-        const overColumn = prev.find((column => column.id === overID || column.tasks.some((task) => task.id === overID)))
+      setBoards((prevBoards) => {
+        return prevBoards.map(board => {
+            // Guardrail: Only process drag logic for the active board
+            if (board.id !== activeBoardID) return board;
 
-        if (!activeColumn || !overColumn) return prev
-        
-        //CASE: A - if item is dropped in the same column
-        if (activeColumn.id === overColumn.id) {
-          const oldIndex = activeColumn.tasks.findIndex(task => task.id === activeID)
-          const newIndex = activeColumn.tasks.findIndex(task => task.id === overID)
+            const activeColumn = board.columns.find(column => column.tasks.some(task => task.id === activeID));
+            const overColumn = board.columns.find(column => column.id === overID || column.tasks.some(task => task.id === overID));
 
-          return prev.map(column => {
-            if (column.id === activeColumn.id) {
-              return {...column, tasks: arrayMove(column.tasks, oldIndex, newIndex)}
-            }
-            return column
-          })
-      }
+            if (!activeColumn || !overColumn) return board;
+            
+            // Handle same-column reordering
+            if (activeColumn.id === overColumn.id) {
+              const oldIndex = activeColumn.tasks.findIndex(task => task.id === activeID);
+              const newIndex = activeColumn.tasks.findIndex(task => task.id === overID);
 
-      //CASE B: - moving item to a different column
-      const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
-      // eslint-disable-next-line no-unused-vars
-      const cleanedTask = {...activeTask, isNew: false}
-
-      return prev.map((column) => {
-        //remove from source column array
-        if (column.id === activeColumn.id) {
-          return {
-            ...column, tasks: column.tasks.filter((task) => task.id !== activeID)
+              return {
+                  ...board,
+                  columns: board.columns.map(column => {
+                      if (column.id === activeColumn.id) {
+                          return { ...column, tasks: arrayMove(column.tasks, oldIndex, newIndex) };
+                      }
+                      return column;
+                  })
+              };
           }
-        }
-        //add to destination column array
-        if (column.id === overColumn.id) {
-          return {
-            ...column, tasks: [...column.tasks, activeTask]
-          }
-        }
-        return column
-      })
-    })
-    setActiveTask(null) 
-  }
+          return board;
+        });
+      });
+      setActiveTask(null);
+    };
 
   const handleDragOver = (event) => {
     const {active, over} = event
@@ -183,41 +248,52 @@ export const useKanban = (initialData) => {
     const activeID = active.id
     const overID = over.id
 
-    setColumns((prev) => {
-      const activeColumn = prev.find(column => column.tasks.some(task => task.id === activeID))
-      const overColumn = prev.find(column => column.id === overID || column.tasks.some((task) => task.id === overID))
+    setBoards((prevBoards) => {
+        return prevBoards.map((board) => {
+            // Only perform drag logic on the active board
+            if (board.id !== activeBoardID) return board;
 
-      if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) {
-        return prev
-      }
+            const activeColumn = board.columns.find(col => col.tasks.some(task => task.id === activeID));
+            const overColumn = board.columns.find(col => col.id === overID || col.tasks.some(task => task.id === overID));
 
-      const activeTask = activeColumn.tasks.find((task) => task.id === activeID)
-      const cleanedTask = {...activeTask, isNew: false} //ensure the editing state is false as you drag&drop
-      const overTasks = overColumn.tasks
+            if (!activeColumn || !overColumn || activeColumn.id === overColumn.id) {
+                return board;
+            }
 
-      // Calculate the new index in the destination column
-      const overIndex = overTasks.findIndex(t => t.id === overID)
-      let newIndex = overIndex >= 0 ? overIndex : overTasks.length
+            const activeTask = activeColumn.tasks.find(t => t.id === activeID);
+            const cleanedTask = { ...activeTask, isNew: false };
+            const overTasks = overColumn.tasks;
 
-      return prev.map(column => {
-        if (column.id === activeColumn.id) {
-          return {...column, tasks: column.tasks.filter((task) => task.id !== activeID)}
-        }
-        if (column.id === overColumn.id) {
-          const newTasks = [...column.tasks]
-          newTasks.splice(newIndex, 0, cleanedTask) //Insert selected task at new index
-          return {...column, tasks: newTasks}
-        }
-        return column
-      })
-    })
-    
+            const overIndex = overTasks.findIndex(t => t.id === overID);
+            let newIndex = overIndex >= 0 ? overIndex : overTasks.length;
+
+            return {
+                ...board,
+                columns: board.columns.map(column => {
+                    if (column.id === activeColumn.id) {
+                        return { ...column, tasks: column.tasks.filter(t => t.id !== activeID) };
+                    }
+                    if (column.id === overColumn.id) {
+                        const newTasks = [...column.tasks];
+                        newTasks.splice(newIndex, 0, cleanedTask);
+                        return { ...column, tasks: newTasks };
+                    }
+                    return column;
+                })
+            };
+        });
+    });
   }
 
 
   return { 
+    boards,
+    addBoard,
+    updateBoard,
+    deleteBoard,
+    activeBoardID,
+    setActiveBoardID,
     columns, 
-    setColumns,
     activeTask, 
     isAddingColumn, 
     newColumnTitle, 
@@ -232,6 +308,9 @@ export const useKanban = (initialData) => {
     modalConfig,
     openDeleteModal,
     closeModal,
+    modalRenameValue,
+    setModalRenameValue,
+    openRenameModal,
     confirmDelete, 
     handleDragStart, 
     handleDragOver, 

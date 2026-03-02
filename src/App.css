@@ -23,6 +23,218 @@ body {
     color: #e2e8f0;
 }
 
+.app-layout {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 400px;
+    background: rgba(10, 10, 18, 0.85);
+    backdrop-filter: blur(15px);
+    border-right: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar-logo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Aligns everything to the left edge */
+    gap: 4px;                   /* Creates natural space between the owl and text */
+    font-size: 16px;
+    font-weight: 800;
+    color: #94a3b8;
+    letter-spacing: 0.1em;
+    margin-bottom: 48px;
+    padding-left: 0px;
+    text-transform: uppercase;
+    width: 100%;   
+}
+
+.logo-icon {
+    width: 180px;                 /* Scaled down so it can sit next to the text */
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+    margin-left: -36px;              /* Prevents the owl from squishing */
+    filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6));
+}
+
+.sidebar-logo span {
+    margin-left: -48px;
+    white-space: nowrap;         /* Keeps the text on one line */
+    background: linear-gradient(135deg, #a78bfa 0%, #f8fafc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Header Styles */
+.editable-title {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.editable-title:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.board-title-input {
+    font-size: 1.8rem;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #8b5cf6;
+    color: #fff;
+    outline: none;
+    width: 100%;
+    font-family: inherit;
+}
+
+/* Sidebar Item Layout */
+.board-list {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.board-items-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Keeps boards left-aligned */
+}
+
+.board-item-wrapper {
+    width: 100%;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.board-actions {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%); /* Centers exactly against the height of the wrapper */
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.board-item-wrapper:hover .board-actions {
+    opacity: 1;
+}
+
+.action-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.action-btn.delete:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.delete-board-btn {
+    position: absolute;
+    right: 12px;
+    background: transparent;
+    border: none;
+    color: #ef4444;
+    font-size: 1.4rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.board-item-wrapper:hover .delete-board-btn {
+    opacity: 1;
+}
+
+.add-board-sidebar {
+    margin-top: 24px;
+    width: 100%;
+    background: transparent;
+    border: 1px dashed rgba(139, 92, 246, 0.4);
+    color: #a78bfa;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.add-board-sidebar:hover {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: #8b5cf6;
+    color: #ddd6fe;
+}
+
+.board-header {
+    width: 100%;
+    max-width: 1400px;
+    margin-bottom: 20px;
+    padding: 0 40px;
+}
+
+.board-header h2 {
+    font-size: 1.8rem;
+    color: #fff;
+    margin: 0;
+}
+
+.board-link {
+    width: 100%;
+    text-align: left;
+    padding: 12px 64px 12px 16px;
+    margin-bottom: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.board-link:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: #e2e8f0;
+}
+
+.board-link.active {
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+}
+
 .kanban-container {
     display: flex;
     flex-direction: column;
@@ -617,7 +829,17 @@ body {
     color: white;
 }
 
-.modal-btn.delete {
+.modal-btn.confirm-green {
+    background: #10b981;
+    color: white;
+}
+
+.modal-btn.confirm-green:hover {
+    background: #059669;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.modal-btn.delete-red {
     background: #ef4444;
     color: white;
 }
@@ -625,6 +847,23 @@ body {
 .modal-btn.delete:hover {
     background: #dc2626;
     box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+}
+
+.modal-rename-input {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    margin-top: 10px;
+    outline: none;
+}
+
+.modal-rename-input:focus {
+    border-color: #8b5cf6;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .error-fallback {
