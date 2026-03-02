@@ -31,7 +31,7 @@ body {
 }
 
 .sidebar {
-    width: 400px;
+    min-width: 360px;
     background: rgba(10, 10, 18, 0.85);
     backdrop-filter: blur(15px);
     border-right: 1px solid rgba(139, 92, 246, 0.2);
@@ -57,17 +57,16 @@ body {
 }
 
 .logo-icon {
-    width: 180px;                 /* Scaled down so it can sit next to the text */
+    width: 180px;    /* Scaled down so it can sit next to the text */
     height: auto;
     object-fit: contain;
     flex-shrink: 0;
-    margin-left: -36px;              /* Prevents the owl from squishing */
+    margin-left: -36px;              /* Pull logo to the left */
     filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.6));
 }
 
 .sidebar-logo span {
     margin-left: -48px;
-    white-space: nowrap;         /* Keeps the text on one line */
     background: linear-gradient(135deg, #a78bfa 0%, #f8fafc 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -101,7 +100,23 @@ body {
 .board-list {
     display: flex;
     flex-direction: column;
+    flex-grow: 1;
+
     width: 100%;
+    padding-bottom: 40px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.board-list::-webkit-scrollbar {
+    width: 6px;
+}
+.board-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.board-list::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
 }
 
 .board-items-container {
@@ -247,7 +262,7 @@ body {
 
 .kanban-container h1 {
     font-size: 2.5rem;
-    margin-bottom: 40px;
+    padding-bottom: 40px;
     background:#a78bfa;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -277,6 +292,7 @@ body {
     width: 100%;
     padding: 20px 40px;
     max-width: 1400px;
+    max-height: 100%;
     mask-image: linear-gradient(
         to right, 
         transparent, 
@@ -292,7 +308,7 @@ body {
         transparent
     );
     overflow-x: auto;
-    overflow-x: overlay;
+    overflow-y:hidden;
     scroll-behavior: smooth;
 }
 
@@ -320,7 +336,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    padding-bottom: 12px;
 }
 
 .column-title-container {
@@ -358,7 +374,7 @@ body {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    max-height: calc(100vh - 250px);
 }
 
 .kanban-column:has(.task-card:nth-child(5)) .task-count-badge {
@@ -382,7 +398,7 @@ body {
     flex-direction: column;
     flex-grow: 1;
     gap: 12px;
-    padding-right: 14px;
+    padding: 10px 10px 30px 10px;
     min-height: 100px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -413,12 +429,11 @@ body {
     justify-content: space-between;
     align-items: stretch;
     min-height: 100px;
-    padding: 12px;
+    padding: 8px 12px;
     background: rgba(30, 30, 50, 0.4);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 10px;
-    margin-bottom: 12px;
     color: #f1f5f9;
     position: relative;
     overflow: hidden;
@@ -438,8 +453,8 @@ body {
     color: #f1f5f9;
     font-size: 16px;
     font-weight: 600;
-    margin: 0 0 6px 0;
-    line-height: 1.4;
+    line-height: 1;
+    margin: 0;
     letter-spacing: -0.01em; 
     word-wrap: break-word;
 }
@@ -448,13 +463,11 @@ body {
     color: #94a3b8; 
     font-size: 12px;
     font-weight: 400;
-    line-height: 1.6;
-    margin-bottom: 10px;
+    line-height: 1;
     /* Limit the preview to 3 lines so cards stay uniform in height */
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
-    overflow: hidden;
     text-overflow: ellipsis;
 }
 
@@ -462,6 +475,7 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .task-card.editing {
@@ -485,10 +499,9 @@ body {
 }
 
 .task-footer {
-    margin-top: auto;
-    padding-top: 8px;
     display: flex;
     justify-content: flex-end;
+    flex-shrink: 0;
 }
 
 .task-card.is-new-flash {
@@ -542,6 +555,7 @@ body {
     font-size: 10px;
     color: #a0a0a0;
     font-style: italic;
+    
 }
 
 .edit-btn {
@@ -775,7 +789,7 @@ body {
     border-radius: 4px;
     text-transform: uppercase;
     display: inline-block;
-    margin-bottom: 8px;
+    
 }
 
 .modal-overlay {
@@ -897,4 +911,236 @@ body {
 .error-fallback button:hover {
     background: #8b5cf6;
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.task-detail-modal {
+    width: 700px;
+    height: 70vh;
+    max-width: 95vw;
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
+    max-height: 90vh; /* Prevents it from growing taller than the screen */
+    overflow: hidden;
+}
+
+/* Modal Header */
+.task-detail-modal .modal-header {
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.task-detail-modal .modal-title {
+    font-size: 1.5rem;
+    color: #f8fafc;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* Tabs Navigation */
+.tabs {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tabs button {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 4px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.tabs button:hover {
+    color: #cbd5e1;
+}
+
+.tabs button.active {
+    color: #a78bfa;
+    border-bottom: 2px solid #a78bfa;
+}
+
+.task-detail-modal .modal-header,
+.tabs,
+.task-detail-modal .modal-actions {
+    flex-shrink: 0;
+}
+
+/* =========================================
+   TASK DETAILS MODAL STYLES
+   ========================================= */
+
+/* Body Container (holds the input or preview) */
+.task-modal-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* Gives a good default height */
+    overflow: hidden; /* Contains the scrollable areas */
+}
+
+/* Write Mode: Textarea */
+.markdown-input {
+    flex-grow: 1;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    resize: none; /* Disable manual resize since we use flexbox */
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.2s;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.markdown-input:focus {
+    border-color: #8b5cf6;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+/* Preview Mode: Rendered Markdown Area */
+.markdown-preview {
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 16px 24px;
+    color: #cbd5e1;
+    line-height: 1.7;
+    overflow-y: auto; /* Allows scrolling if content is long */
+}
+
+.empty-state {
+    color: #475569;
+    font-style: italic;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.markdown-input, 
+.markdown-preview {
+    flex-grow: 1;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* =========================================
+   MARKDOWN RICH TEXT FORMATTING
+   ========================================= */
+
+.markdown-preview h1, 
+.markdown-preview h2, 
+.markdown-preview h3 {
+    color: #f8fafc;
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.markdown-preview h1 {
+    font-size: 1.75em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+}
+
+.markdown-preview h2 {
+    font-size: 1.4em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 6px;
+}
+
+.markdown-preview ul, 
+.markdown-preview ol {
+    padding-left: 24px;
+    margin-bottom: 16px;
+}
+
+.markdown-preview li {
+    margin-bottom: 6px;
+}
+
+/* Styles specifically for remark-gfm task/checklists */
+.markdown-preview li.task-list-item {
+    list-style-type: none; /* Removes the standard bullet */
+    margin-left: -24px;    /* Pulls it back to align flush */
+    display: flex;
+    align-items: flex-start;
+}
+
+.markdown-preview input[type="checkbox"] {
+    margin-top: 6px;
+    margin-right: 12px;
+    accent-color: #8b5cf6;
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.markdown-preview a {
+    color: #a78bfa;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.markdown-preview a:hover {
+    border-bottom: 1px solid #a78bfa;
+}
+
+/* Inline Code Snippets */
+.markdown-preview code {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c4b5fd;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* Multi-line Code Blocks */
+.markdown-preview pre {
+    background: #09090b;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin-bottom: 16px;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.markdown-preview pre code {
+    background: transparent;
+    padding: 0;
+    color: #e2e8f0;
+    border-radius: 0;
+}
+
+/* Blockquotes (Great for Acceptance Criteria!) */
+.markdown-preview blockquote {
+    border-left: 4px solid #8b5cf6;
+    background: rgba(139, 92, 246, 0.05);
+    margin: 0 0 16px 0;
+    padding: 12px 16px;
+    color: #94a3b8;
+    font-style: italic;
+    border-radius: 0 8px 8px 0;
+}
+
+/* Modal Actions (Save / Cancel buttons) */
+.task-detail-modal .modal-actions {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }

@@ -2,7 +2,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import DroppableContainer from './DroppableContainer'
 import SortableTask from "./SortableTask"
 
-export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, onRemoveColumn}) {
+export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, onRemoveColumn, onOpenTaskModal}) {
     return (
         <div className='kanban-column' key={column.id}>
             <div className="column-header">
@@ -12,7 +12,7 @@ export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, 
                 </div>
                 
                 <div className="column-controls">
-                    <button className='add-task-btn' onClick={() => onAddTask(column.id)}>+</button>
+                    
                     <button className="delete-column-btn" onClick={() => onRemoveColumn(column.id)}>x</button>
                 </div>
             </div>
@@ -33,10 +33,13 @@ export default function Column ({column, onAddTask, onDeleteTask, onUpdateTask, 
                         columnID={column.id}
                         onDelete={onDeleteTask}
                         onUpdate={onUpdateTask}
+                        onOpenModal={onOpenTaskModal}
                     />
                     ))}
                 </DroppableContainer>
             </SortableContext>
+            <button className='add-task-btn' onClick={() => onAddTask(column.id)}>+</button>
         </div>
+        
     )
 }

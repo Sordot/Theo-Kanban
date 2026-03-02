@@ -28,6 +28,12 @@ export const useKanban = (initialData) => {
 
     const [modalRenameValue, setModalRenameValue] = useState('')
 
+    const [taskModalConfig, setTaskModalConfig] = useState({
+      isOpen: false,
+      columnID: null,
+      task: null
+    })
+
     useEffect(() => {
         localStorage.setItem('theo-kanban-boards', JSON.stringify(boards))
     }, [boards])
@@ -75,7 +81,7 @@ export const useKanban = (initialData) => {
         //get unique task id
         const newTask = {
           id: `task-${Date.now()}`,
-          text: '',
+          text: 'New Task',
           priority: 'medium',
           description: '',
           isNew: true, //trigger edit mode automatically
@@ -90,6 +96,7 @@ export const useKanban = (initialData) => {
                 )
             };
         }));
+        setTaskModalConfig({isOpen: true, columnID: inputColumnID, task: newTask})
     }
 
     const updateTask = useCallback((columnID, taskID, updates) => {
@@ -193,6 +200,14 @@ export const useKanban = (initialData) => {
           type: 'renameBoard', 
           data: { boardID: board.id } 
       });
+    };
+
+    const openTaskModal = (columnID, task) => {
+        setTaskModalConfig({ isOpen: true, columnID, task });
+    };
+
+    const closeTaskModal = () => {
+        setTaskModalConfig({ isOpen: false, columnID: null, task: null });
     };
 
     //Drag and Drop Handlers
@@ -314,6 +329,9 @@ export const useKanban = (initialData) => {
     confirmDelete, 
     handleDragStart, 
     handleDragOver, 
-    handleDragEnd
+    handleDragEnd,
+    taskModalConfig,
+    openTaskModal,
+    closeTaskModal
   }
 }

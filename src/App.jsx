@@ -16,6 +16,7 @@ import Column from './components/Column'
 import ConfirmationModal from './components/ConfirmationModal'
 import Sidebar from './components/Sidebar'
 import BoardHeader from './components/BoardHeader'
+import TaskModal from './components/TaskModal'
 
 const DEFAULT_DATA = [
   {
@@ -37,10 +38,9 @@ const DEFAULT_DATA = [
 function App() {
 
   const { 
-    boards, 
-    addBoard,
-    updateBoard,
-    deleteBoard,            
+    boards,
+    activeBoard, 
+    addBoard,            
     activeBoardID,      
     setActiveBoardID,
     columns, 
@@ -61,7 +61,10 @@ function App() {
     newColumnTitle, 
     setNewColumnTitle, 
     openColumnEditor, 
-    closeColumnEditor 
+    closeColumnEditor,
+    taskModalConfig,
+    openTaskModal,
+    closeTaskModal 
   } = useKanban(DEFAULT_DATA)
 
   const sensors = useSensors(
@@ -80,7 +83,7 @@ function App() {
       onRenameBoard={openRenameModal}
       />
       <div className='kanban-container'>
-        <BoardHeader className="board-header">
+        <BoardHeader key={activeBoard?.id} className="board-header">
           <h2>{boards.find(b => b.id === activeBoardID)?.name || "Kanban Board"}</h2>
         </BoardHeader>
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
@@ -94,6 +97,7 @@ function App() {
                 onDeleteTask={(colId, taskId) => openDeleteModal('task', { columnID: colId, taskID: taskId })}
                 onUpdateTask={updateTask}
                 onRemoveColumn={() => openDeleteModal('column', { columnID: column.id })}
+                onOpenTaskModal={openTaskModal}
               />
             ))}
             {isAddingColumn ? (
@@ -143,6 +147,15 @@ function App() {
               />
             )}
           </ConfirmationModal>
+          <TaskModal 
+            isOpen={taskModalConfig.isOpen}
+            task={taskModalConfig.task}
+            onClose={closeTaskModal}
+            onSave={(taskID, updatedTask) => {
+              updateTask(taskModalConfig.columnID, taskID, updatedTask);
+              closeTaskModal();
+            }}
+          />
           <DragOverlay>
             {activeTask ? (
               <div className={`task-card dragging-overlay priority-${activeTask.priority}`}>

@@ -1,13 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function BoardHeader({ activeBoard, onUpdateBoard }) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(activeBoard?.name || "");
 
   // Keeps the input in sync if the user switches boards while editing
-  useEffect(() => {
-    setTitle(activeBoard?.name || "");
-  }, [activeBoard]);
 
   const handleSave = () => {
     setIsEditing(false);
