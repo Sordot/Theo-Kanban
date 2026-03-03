@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
+import { getNextPriority } from "../hooks/useKanban";
 
 const MenuBar = ({ editor }) => {
     if (!editor) {
@@ -150,11 +151,27 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         editor.commands.setContent(task.description || '');
     };
 
+    const handlePriorityCycle = () => {
+        const nextPriority = getNextPriority(priority);
+        setPriority(nextPriority);
+        
+        // Save immediately so the board background updates instantly
+        onSave(task.id, { ...task, text, description, priority: nextPriority });
+    };
+
     return (
         <div className="modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) handleModalClose(); }}>
             <div className="modal-content task-detail-modal">
                 <div className="modal-header">
                     <div className="modal-title-wrapper" style={{ alignItems: 'center' }}>
+                        <div 
+                            className={`priority-badge ${priority}`} 
+                            onClick={handlePriorityCycle}
+                            style={{ cursor: 'pointer', userSelect: 'none', marginRight: '12px' }}
+                            title="Click to cycle priority"
+                        >
+                            {priority.toUpperCase()}
+                        </div>
                         {isEditingTitle ? (
                             <input
                                 autoFocus

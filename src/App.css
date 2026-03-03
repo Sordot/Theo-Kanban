@@ -1022,6 +1022,16 @@ body {
     border-bottom: 1px solid rgba(139, 92, 246, 0.2);
 }
 
+.modal-header .priority-badge:hover {
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header .priority-badge:active {
+    transform: translateY(0);
+}
+
 .task-detail-modal .modal-title {
     font-size: 1.5rem;
     color: #f8fafc;
@@ -1052,26 +1062,27 @@ body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    overflow: hidden;
+    min-height: 0;
 }
 
 .tiptap-wrapper {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    height: 100%;
+    min-height: 0;
 }
 
 /* Toolbar Styling */
 .tiptap-toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
-    padding: 8px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    gap: 6px;
+    padding: 10px 14px;
+    background: rgba(15, 12, 41, 0.7); /* Deeper, sleeker background */
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Subtle divider */
+    border-radius: 12px 12px 0 0; /* Softer, modern radius */
+    align-items: center;
 }
 
 .tiptap-toolbar button {
@@ -1088,7 +1099,7 @@ body {
 }
 
 .tiptap-toolbar button:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(139, 92, 246, 0.1);
     color: #f8fafc;
 }
 
@@ -1096,11 +1107,13 @@ body {
 .tiptap-toolbar button.is-active {
     background: rgba(139, 92, 246, 0.2);
     color: #a78bfa;
-    border-color: rgba(139, 92, 246, 0.3);
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
 }
 
 .toolbar-divider {
     width: 1px;
+    height: 20px;
     background: rgba(255, 255, 255, 0.1);
     margin: 0 4px;
 }
@@ -1110,22 +1123,32 @@ body {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.25);
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    border-radius: 0 0 8px 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-top: none; /* Connects seamlessly to the toolbar */
+    border-radius: 0 0 12px 12px;
     overflow-y: auto;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease;
+    min-height: 0;
+}
+
+.description-section {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0;
 }
 
 /* Focus glow effect */
 .tiptap-container:focus-within {
-    border-color: #8b5cf6;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 0 0 2px rgba(139, 92, 246, 0.2);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 2px 15px rgba(0,0,0,0.3), 0 0 0 1px #8b5cf6;
 }
 
 /* The actual text area where you type */
 .ProseMirror {
-    padding: 16px 24px;
+    padding: 20px 24px;
     min-height: 200px;
     outline: none;
     color: #e2e8f0;
@@ -1136,14 +1159,27 @@ body {
 
 /* Preview Mode Container */
 .tiptap-preview {
-    flex-grow: 1;
-    background: rgba(0, 0, 0, 0.15);
-    border: 1px solid transparent;
-    border-radius: 8px;
-    padding: 16px 24px;
+    width: 80%;
+    height: 30%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(255, 255, 255, 0.1); /* Dashed border suggests it's clickable */
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 12px;
     color: #cbd5e1;
     line-height: 1.7;
-    overflow-y: auto;
+    overflow-y: scroll;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-height: 0;
+    text-align: left;
+    
+}
+
+.tiptap-preview:hover {
+    background: rgba(139, 92, 246, 0.05);
+    border-color: rgba(139, 92, 246, 0.3);
+    box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05);
 }
 
 /* =========================================
@@ -1219,7 +1255,28 @@ body {
     border-radius: 0 8px 8px 0;
 }
 
+/* Custom Scrollbars for Editor and Preview */
+.tiptap-container::-webkit-scrollbar,
+.tiptap-preview::-webkit-scrollbar {
+    width: 6px;
+}
 
+.tiptap-container::-webkit-scrollbar-track,
+.tiptap-preview::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0;
+}
+
+.tiptap-container::-webkit-scrollbar-thumb,
+.tiptap-preview::-webkit-scrollbar-thumb {
+    background-color: rgba(139, 92, 246, 0.3);
+    border-radius: 10px;
+}
+
+.tiptap-container::-webkit-scrollbar-thumb:hover,
+.tiptap-preview::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(139, 92, 246, 0.6);
+}
 
 /* Modal Actions (Save / Cancel buttons) */
 .task-detail-modal .modal-actions {

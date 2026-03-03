@@ -38,7 +38,6 @@ function App() {
 
   const {
     boards,
-    activeBoard,
     addBoard,
     activeBoardID,
     setActiveBoardID,

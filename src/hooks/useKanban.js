@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 
+export const getNextPriority = (currentPriority) => {
+  const levels = ['low', 'medium', 'high'];
+  const currentIndex = levels.indexOf(currentPriority || 'medium');
+  return levels[(currentIndex + 1) % levels.length];
+};
+
 export const useKanban = (initialData) => {
 
   const [boards, setBoards] = useState(() => {

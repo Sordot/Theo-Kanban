@@ -1,6 +1,7 @@
 import { memo, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { getNextPriority } from '../hooks/useKanban';
 
 const SortableTask = memo(({id, task, columnID, onDelete, onUpdate, onOpenModal}) => {
     
@@ -34,10 +35,7 @@ const SortableTask = memo(({id, task, columnID, onDelete, onUpdate, onOpenModal}
 
     const cyclePriority = (e) => {
       e.stopPropagation()
-      const levels = ['low', 'medium', 'high']
-      const currentIndex = levels.indexOf(task.priority || 'medium')
-      const nextPriority = levels[(currentIndex + 1) % levels.length]
-      onUpdate(columnID, id, { ...task, priority: nextPriority })
+      onUpdate(columnID, id, { ...task, priority: getNextPriority(task.priority) })
     };
 
     const style = {
