@@ -1469,3 +1469,10 @@ button.sidebar-value {
     color: #94a3b8;
     font-size: 16px;
 }
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end; /* Aligns the text to the bottom right */
+    margin-top: 8px;
+    padding-right: 10px;
+}

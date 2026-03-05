@@ -225,6 +225,13 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         });
     };
 
+    const formatTime = (ts) => {
+        if (!ts) return ''
+        return new Date(ts).toLocaleString([], {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        })
+    }
+
     return (
         <div className="modal-overlay" onMouseDown={(e) => { if (e.target === e.currentTarget) handleModalClose(); }}>
             <div className="modal-content task-detail-modal">
@@ -373,6 +380,13 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                     </div>
 
                 </div>
+                {task?.updatedAt && (
+                    <div className="modal-footer">
+                        <span className="timestamp">
+                            Last updated at: {formatTime(task.updatedAt)}
+                        </span>
+                    </div>
+                )}
             </div>
 
         </div>
