@@ -634,9 +634,32 @@ body {
     cursor: pointer;
 }
 
-.edit-input.priority option {
+.edit-input option {
     background-color: #0a0a12;
     color: #f1f5f9;
+}
+
+.edit-input option,
+.sidebar-value option {
+    background-color: #0a0a12;
+    color: #f1f5f9;
+}
+
+select.sidebar-value {
+    text-align: center;
+    text-align-last: center; /* Required for the selected value to center in the box */
+}
+
+/* Ensure the dropdown list items revert to left alignment */
+select.sidebar-value option {
+    text-align: left;
+}
+
+/* subtle focus state for the select */
+select.sidebar-value:focus {
+    outline: none;
+    border-color: rgba(139, 92, 246, 0.5);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .edit-input.desc {
@@ -1072,18 +1095,22 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 20px;
     padding: 20px;
     background: rgba(0, 0, 0, 0.2); 
     border: 1px solid rgba(139, 92, 246, 0.2); /* Matches your tiptap border */
     border-radius: 12px;
-    height: fit-content;
+    align-self: stretch;
+    min-width: 0;
 }
+
+
 
 .sidebar-field {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .sidebar-field label {
@@ -1103,6 +1130,13 @@ body {
     border: 1px solid transparent;
     transition: all 0.2s ease;
     cursor: pointer;
+
+    display: block;
+    width: 100%; /* ADD THIS LINE to prevent it from pushing boundaries */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
 }
 
 .sidebar-value:hover {
@@ -1110,7 +1144,7 @@ body {
     border-color: rgba(139, 92, 246, 0.3);
 }
 
-/* --- SUBTLE SIDEBAR PRIORITY STYLES --- */
+/* --- SIDEBAR PRIORITY STYLES --- */
 
 /* High Priority (Subdued Red) */
 .sidebar-value.High {

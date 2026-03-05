@@ -7,6 +7,16 @@ export const getNextPriority = (currentPriority) => {
   return levels[(currentIndex + 1) % levels.length];
 };
 
+export const getNextEffort = (currentEffort) => {
+    const EFFORT_LEVELS = ["Small", "Medium", "Large", "X-Large"];
+    const currentIndex = EFFORT_LEVELS.indexOf(currentEffort);
+    // If not found or at the end of the list, loop back to the first item
+    if (currentIndex === -1 || currentIndex === EFFORT_LEVELS.length - 1) {
+        return EFFORT_LEVELS[0];
+    }
+    return EFFORT_LEVELS[currentIndex + 1];
+};
+
 export const useKanban = (initialData) => {
 
   const [boards, setBoards] = useState(() => {

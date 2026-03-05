@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { getNextPriority } from "../hooks/useKanban";
+import { getNextEffort } from "../hooks/useKanban"
 
 const MenuBar = ({ editor }) => {
     if (!editor) {
@@ -54,20 +55,24 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
 
     const [text, setText] = useState("");
     const [priority, setPriority] = useState("Medium")
-    const [description, setDescription] = useState("");
+    const [description, setDescription] = useState("")
+    const [assignee, setAssignee] = useState("")
+    const [issueType, setIssueType] = useState("User Story")
+    const [effort, setEffort] = useState("Medium")
+    const [isEditingAssignee, setIsEditingAssignee] = useState(false)
 
     // Track the previous task ID to know when a new card is opened
     const [prevTaskId, setPrevTaskId] = useState(null);
 
     // 1. Create a ref to track the latest state for our close handler
-    const modalStateRef = useRef({ text, description, task, priority });
+    const modalStateRef = useRef({ text, description, task, priority, assignee, issueType, effort });
     useEffect(() => {
-        modalStateRef.current = { text, description, task, priority };
-    }, [text, description, task, priority]);
+        modalStateRef.current = { text, description, task, priority, assignee, issueType, effort };
+    }, [text, description, task, priority, assignee, issueType, effort]);
 
     // 2. Create a smart close handler that auto-saves if you typed anything
     const handleModalClose = useCallback(() => {
-        const { text: currentText, description: currentDesc, task: currentTask, priority: currentPriority } = modalStateRef.current;
+        const { text: currentText, description: currentDesc, task: currentTask, priority: currentPriority, assignee: currentAssignee, issueType: currentIssueType, effort: currentEffort } = modalStateRef.current;
 
         if (!currentTask) {
             onClose();
@@ -88,7 +93,10 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 ...currentTask,
                 text: currentText,
                 description: currentDesc,
-                priority: currentPriority
+                priority: currentPriority,
+                assignee: currentAssignee,
+                issueType: currentIssueType,
+                effort: currentEffort
             });
             onClose(false);
         }
@@ -118,12 +126,16 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
     useEffect(() => {
         if (task && isOpen) {
             setText(task.text || "");
-            setDescription(task.description || "");
-            setPriority(task.priority || "Medium");
+            setDescription(task.description || "")
+            setPriority(task.priority || "Medium")
+            setAssignee(task.assignee || "")
+            setIssueType(task.issueType || "User Story")
+            setEffort(task.effort || "Medium")
 
             // Set initial editing states based on whether data exists
             setIsEditingTitle(task.text === 'New Task' || !task.text);
             setIsEditingDescription(!task.description);
+
 
             // Ensure TipTap updates if the task description changes externally
             if (editor && editor.getHTML() !== task.description) {
@@ -139,12 +151,17 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         const finalTitle = text.trim() ? text : "Untitled Task"
         setText(finalTitle)
         setIsEditingTitle(false);
-        onSave(task.id, { ...task, text: finalTitle, description, priority });
+        onSave(task.id, { ...task, text: finalTitle, description, priority, assignee, effort });
     };
 
     const handleDescriptionSave = () => {
         setIsEditingDescription(false);
-        onSave(task.id, { ...task, text, description, priority });
+        onSave(task.id, { ...task, text, description, priority, assignee, effort });
+    };
+
+    const handleAssigneeSave = () => {
+        setIsEditingAssignee(false);
+        onSave(task.id, { ...task, text, description, priority, assignee, effort });
     };
 
     const handleDescriptionCancel = () => {
@@ -159,7 +176,19 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         setPriority(nextPriority);
 
         // Save immediately so the board background updates instantly
-        onSave(task.id, { ...task, text, description, priority: nextPriority });
+        onSave(task.id, { ...task, text, description, priority: nextPriority, assignee, effort });
+    };
+
+    const handleIssueTypeChange = (e) => {
+        const newType = e.target.value;
+        setIssueType(newType);
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType: newType, effort });
+    };
+
+    const handleEffortCycle = () => {
+        const nextEffort = getNextEffort(effort);
+        setEffort(nextEffort);
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort: nextEffort });
     };
 
     return (
@@ -193,7 +222,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 <div className="task-modal-body">
                     <div className="task-main-content">
                         <div className="description-section">
-                            <h3 className="section-label" style={{ marginBottom: '8px', color: '#5e6c84', fontSize: '14px' }}>Description</h3>
+                            <h3 className="section-label" style={{ marginBottom: '8px', color: '#5e6c84', fontSize: '14px', textAlign: 'left', paddingLeft: '8px' }}>Key Details</h3>
 
                             {isEditingDescription ? (
                                 <div className="rich-text-editor">
@@ -231,26 +260,72 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                 className={`sidebar-value ${priority}`}
                                 onClick={handlePriorityCycle}
                                 title="Click to cycle priority"
-                                >
+                            >
                                 {priority}
                             </button>
                         </div>
                         <div className="sidebar-field">
                             <label>Assignee</label>
-                            <span className="sidebar-value">Unassigned</span>
+                            {isEditingAssignee ? (
+                                <input
+                                    autoFocus
+                                    className="sidebar-value edit-input"
+                                    value={assignee}
+                                    onChange={(e) => setAssignee(e.target.value)}
+                                    onBlur={handleAssigneeSave}
+                                    onKeyDown={(e) => e.key === 'Enter' && handleAssigneeSave()}
+                                    placeholder="Unassigned"
+                                    style={{ width: '100%', padding: '2px 4px', boxSizing: 'border-box' }}
+                                />
+                            ) : (
+                                <span
+                                    className="sidebar-value"
+                                    onClick={() => setIsEditingAssignee(true)}
+                                    title={assignee ? `Assignee: ${assignee}` : "Click to assign"}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {assignee || "Unassigned"}
+                                </span>
+                            )}
+                        </div>
+                        <div className="sidebar-field">
+                            <label>Issue Type</label>
+                            <select
+                                className="sidebar-value"
+                                value={issueType}
+                                onChange={handleIssueTypeChange}
+                                style={{ appearance: 'auto', cursor: 'pointer' }}
+                            >
+                                <option value="User Story">User Story</option>
+                                <option value="Bug">Bug</option>
+                                <option value="Test">Test</option>
+                                <option value="Spike">Spike</option>
+                            </select>
                         </div>
                         <div className="sidebar-field">
                             <label>Effort</label>
-                            <span className="sidebar-value">Medium</span>
+                            <button
+                                className="sidebar-value"
+                                onClick={handleEffortCycle}
+                                title="Click to cycle effort"
+                            >
+                                {effort}
+                            </button>
                         </div>
                         <div className="sidebar-field">
                             <label>Due Date</label>
                             <span className="sidebar-value">No date</span>
                         </div>
+                        <div className="sidebar-field">
+                            <label>Environment</label>
+                            <span className="sidebar-value">Dev</span>
+                        </div>
                     </div>
-                </div>
 
+                </div>
             </div>
+
         </div>
+
     );
 }
