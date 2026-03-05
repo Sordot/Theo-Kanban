@@ -1408,3 +1408,64 @@ button.sidebar-value {
     padding-top: 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* ========REACT DATEPICKER STYLES=========== */
+
+/* Fix the wrapper so the input fills the sidebar field */
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker__input-container input.sidebar-value {
+    text-align: center;
+}
+
+/* Make the calendar popup dark */
+.react-datepicker {
+    background-color: #0a0a12;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    font-family: inherit;
+    color: #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Header section (month/year) */
+.react-datepicker__header {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.react-datepicker__current-month, 
+.react-datepicker__day-name {
+    color: #f1f5f9;
+}
+
+/* Individual days */
+.react-datepicker__day {
+    color: #e2e8f0;
+}
+
+.react-datepicker__day:hover {
+    background-color: rgba(139, 92, 246, 0.2);
+    border-radius: 4px;
+}
+
+/* The selected day */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+    background-color: #8b5cf6 !important;
+    color: #ffffff;
+    border-radius: 4px;
+}
+
+/* Days outside the current month */
+.react-datepicker__day--outside-month {
+    color: #475569;
+}
+
+/* The 'clear' button inside the input */
+.react-datepicker__close-icon::after {
+    background-color: transparent;
+    color: #94a3b8;
+    font-size: 16px;
+}

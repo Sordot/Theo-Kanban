@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { getNextPriority } from "../hooks/useKanban";
@@ -50,29 +52,41 @@ const MenuBar = ({ editor }) => {
 
 export default function TaskModal({ isOpen, task, onClose, onSave }) {
 
-    const [isEditingTitle, setIsEditingTitle] = useState(false)
-    const [isEditingDescription, setIsEditingDescription] = useState(false)
-
     const [text, setText] = useState("");
     const [priority, setPriority] = useState("Medium")
     const [description, setDescription] = useState("")
     const [assignee, setAssignee] = useState("")
     const [issueType, setIssueType] = useState("User Story")
     const [effort, setEffort] = useState("Medium")
+    const [environment, setEnvironment] = useState("Dev")
+    const [dueDate, setDueDate] = useState(null)
+
     const [isEditingAssignee, setIsEditingAssignee] = useState(false)
+    const [isEditingTitle, setIsEditingTitle] = useState(false)
+    const [isEditingDescription, setIsEditingDescription] = useState(false)
 
     // Track the previous task ID to know when a new card is opened
     const [prevTaskId, setPrevTaskId] = useState(null);
 
     // 1. Create a ref to track the latest state for our close handler
-    const modalStateRef = useRef({ text, description, task, priority, assignee, issueType, effort });
+    const modalStateRef = useRef({ text, description, task, priority, assignee, issueType, effort, dueDate, environment });
     useEffect(() => {
-        modalStateRef.current = { text, description, task, priority, assignee, issueType, effort };
-    }, [text, description, task, priority, assignee, issueType, effort]);
+        modalStateRef.current = { text, description, task, priority, assignee, issueType, effort, dueDate, environment };
+    }, [text, description, task, priority, assignee, issueType, effort, dueDate, environment]);
 
     // 2. Create a smart close handler that auto-saves if you typed anything
     const handleModalClose = useCallback(() => {
-        const { text: currentText, description: currentDesc, task: currentTask, priority: currentPriority, assignee: currentAssignee, issueType: currentIssueType, effort: currentEffort } = modalStateRef.current;
+        const {
+            text: currentText,
+            description: currentDesc,
+            task: currentTask,
+            priority: currentPriority,
+            assignee: currentAssignee,
+            issueType: currentIssueType,
+            effort: currentEffort,
+            dueDate: currentDueDate,
+            environment: currentEnvironment
+        } = modalStateRef.current;
 
         if (!currentTask) {
             onClose();
@@ -96,7 +110,9 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 priority: currentPriority,
                 assignee: currentAssignee,
                 issueType: currentIssueType,
-                effort: currentEffort
+                effort: currentEffort,
+                dueDate: currentDueDate ? currentDueDate.toISOString() : null,
+                environment: currentEnvironment
             });
             onClose(false);
         }
@@ -131,6 +147,9 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
             setAssignee(task.assignee || "")
             setIssueType(task.issueType || "User Story")
             setEffort(task.effort || "Medium")
+            setEnvironment(task.environment || "Dev")
+            setDueDate(task.dueDate ? new Date(task.dueDate) : null)
+
 
             // Set initial editing states based on whether data exists
             setIsEditingTitle(task.text === 'New Task' || !task.text);
@@ -189,6 +208,21 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         const nextEffort = getNextEffort(effort);
         setEffort(nextEffort);
         onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort: nextEffort });
+    };
+
+    const handleEnvironmentChange = (e) => {
+        const newEnv = e.target.value;
+        setEnvironment(newEnv);
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort, environment: newEnv });
+    };
+
+    const handleDueDateChange = (date) => {
+        setDueDate(date);
+        onSave(task.id, {
+            ...task,
+            text, description, priority, assignee, issueType, effort, environment,
+            dueDate: date ? date.toISOString() : null
+        });
     };
 
     return (
@@ -314,11 +348,27 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                         </div>
                         <div className="sidebar-field">
                             <label>Due Date</label>
-                            <span className="sidebar-value">No date</span>
+                            <DatePicker
+                                selected={dueDate}
+                                onChange={handleDueDateChange}
+                                className="sidebar-value"
+                                placeholderText="No date"
+                                dateFormat="MMM d, yyyy" // e.g., "Oct 24, 2023"
+                            />
                         </div>
                         <div className="sidebar-field">
                             <label>Environment</label>
-                            <span className="sidebar-value">Dev</span>
+                            <select
+                                className="sidebar-value"
+                                value={environment}
+                                onChange={handleEnvironmentChange}
+                                style={{ appearance: 'auto', cursor: 'pointer' }}
+                            >
+                                <option value="Dev">Dev</option>
+                                <option value="QA">QA</option>
+                                <option value="Staging">Staging</option>
+                                <option value="Production">Production</option>
+                            </select>
                         </div>
                     </div>
 
