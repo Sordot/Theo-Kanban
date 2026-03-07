@@ -84,8 +84,11 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
                     </div>
                 </div>
                 <p className='task-text'>{task.text || 'Untitled Task'}</p>
-                <div className='task-footer'>
-                    <span className='timestamp'>
+                <div className='task-footer' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span className='footer-label'>
+                        {task.subtasks?.length || 0} {task.subtasks?.length === 1 ? 'Subtask' : 'Subtasks'}
+                    </span>
+                    <span className='footer-label'>
                         Updated: {formatTime(task.updatedAt)}
                     </span>
                 </div>

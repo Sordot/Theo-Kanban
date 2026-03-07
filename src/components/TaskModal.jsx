@@ -6,6 +6,8 @@ import StarterKit from '@tiptap/starter-kit'
 import { getNextPriority } from "../hooks/useKanban";
 import { getNextEffort } from "../hooks/useKanban"
 
+
+//The toolbar that sits above the tiptap editor
 const MenuBar = ({ editor }) => {
     if (!editor) {
         return null;
@@ -60,6 +62,8 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
     const [effort, setEffort] = useState("Medium")
     const [environment, setEnvironment] = useState("Dev")
     const [dueDate, setDueDate] = useState(null)
+    const [subtasks, setSubtasks] = useState([])
+    const [newSubtaskText, setNewSubtaskText] = useState("")
 
     const [isEditingAssignee, setIsEditingAssignee] = useState(false)
     const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -69,10 +73,10 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
     const [prevTaskId, setPrevTaskId] = useState(null);
 
     // 1. Create a ref to track the latest state for our close handler
-    const modalStateRef = useRef({ text, description, task, priority, assignee, issueType, effort, dueDate, environment });
+    const modalStateRef = useRef({ text, description, task, priority, assignee, issueType, effort, dueDate, environment, subtasks });
     useEffect(() => {
-        modalStateRef.current = { text, description, task, priority, assignee, issueType, effort, dueDate, environment };
-    }, [text, description, task, priority, assignee, issueType, effort, dueDate, environment]);
+        modalStateRef.current = { text, description, task, priority, assignee, issueType, effort, dueDate, environment, subtasks };
+    }, [text, description, task, priority, assignee, issueType, effort, dueDate, environment, subtasks]);
 
     // 2. Create a smart close handler that auto-saves if you typed anything
     const handleModalClose = useCallback(() => {
@@ -85,7 +89,8 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
             issueType: currentIssueType,
             effort: currentEffort,
             dueDate: currentDueDate,
-            environment: currentEnvironment
+            environment: currentEnvironment,
+            subtasks: currentSubtasks
         } = modalStateRef.current;
 
         if (!currentTask) {
@@ -112,7 +117,8 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 issueType: currentIssueType,
                 effort: currentEffort,
                 dueDate: currentDueDate ? currentDueDate.toISOString() : null,
-                environment: currentEnvironment
+                environment: currentEnvironment,
+                subtasks: currentSubtasks
             });
             onClose(false);
         }
@@ -149,6 +155,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
             setEffort(task.effort || "Medium")
             setEnvironment(task.environment || "Dev")
             setDueDate(task.dueDate ? new Date(task.dueDate) : null)
+            setSubtasks(task.subtasks || []);
 
 
             // Set initial editing states based on whether data exists
@@ -170,17 +177,17 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         const finalTitle = text.trim() ? text : "Untitled Task"
         setText(finalTitle)
         setIsEditingTitle(false);
-        onSave(task.id, { ...task, text: finalTitle, description, priority, assignee, effort });
+        onSave(task.id, { ...task, text: finalTitle, description, priority, assignee, effort, subtasks });
     };
 
     const handleDescriptionSave = () => {
         setIsEditingDescription(false);
-        onSave(task.id, { ...task, text, description, priority, assignee, effort });
+        onSave(task.id, { ...task, text, description, priority, assignee, effort, subtasks });
     };
 
     const handleAssigneeSave = () => {
         setIsEditingAssignee(false);
-        onSave(task.id, { ...task, text, description, priority, assignee, effort });
+        onSave(task.id, { ...task, text, description, priority, assignee, effort, subtasks });
     };
 
     const handleDescriptionCancel = () => {
@@ -195,25 +202,25 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         setPriority(nextPriority);
 
         // Save immediately so the board background updates instantly
-        onSave(task.id, { ...task, text, description, priority: nextPriority, assignee, effort });
+        onSave(task.id, { ...task, text, description, priority: nextPriority, assignee, effort, subtasks });
     };
 
     const handleIssueTypeChange = (e) => {
         const newType = e.target.value;
         setIssueType(newType);
-        onSave(task.id, { ...task, text, description, priority, assignee, issueType: newType, effort });
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType: newType, effort, subtasks });
     };
 
     const handleEffortCycle = () => {
         const nextEffort = getNextEffort(effort);
         setEffort(nextEffort);
-        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort: nextEffort });
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort: nextEffort, subtasks });
     };
 
     const handleEnvironmentChange = (e) => {
         const newEnv = e.target.value;
         setEnvironment(newEnv);
-        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort, environment: newEnv });
+        onSave(task.id, { ...task, text, description, priority, assignee, issueType, effort, environment: newEnv, subtasks });
     };
 
     const handleDueDateChange = (date) => {
@@ -221,7 +228,42 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
         onSave(task.id, {
             ...task,
             text, description, priority, assignee, issueType, effort, environment,
-            dueDate: date ? date.toISOString() : null
+            dueDate: date ? date.toISOString() : null, subtasks
+        });
+    };
+
+    const handleAddSubtask = (e) => {
+        if (e.key === 'Enter' && newSubtaskText.trim()) {
+            const newSubtask = {
+                id: `subtask-${Date.now()}`,
+                text: newSubtaskText.trim(),
+                completed: false
+            };
+            const updatedSubtasks = [...subtasks, newSubtask];
+            setSubtasks(updatedSubtasks);
+            setNewSubtaskText("");
+
+            onSave(task.id, {
+                ...task, text, description, priority, assignee, issueType, effort, environment, subtasks: updatedSubtasks
+            });
+        }
+    };
+
+    const handleToggleSubtask = (subtaskId) => {
+        const updatedSubtasks = subtasks.map(st =>
+            st.id === subtaskId ? { ...st, completed: !st.completed } : st
+        );
+        setSubtasks(updatedSubtasks);
+        onSave(task.id, {
+            ...task, text, description, priority, assignee, issueType, effort, environment, subtasks: updatedSubtasks
+        });
+    };
+
+    const handleDeleteSubtask = (subtaskId) => {
+        const updatedSubtasks = subtasks.filter(st => st.id !== subtaskId);
+        setSubtasks(updatedSubtasks);
+        onSave(task.id, {
+            ...task, text, description, priority, assignee, issueType, effort, environment, subtasks: updatedSubtasks
         });
     };
 
@@ -290,6 +332,45 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                     )}
                                 </div>
                             )}
+                        </div>
+                        <div className="subtasks-section">
+                            <h3 className="section-label subtasks-label">
+                                Subtasks
+                            </h3>
+
+                            <div className="subtasks-list">
+                                {subtasks.map(subtask => (
+                                    <div key={subtask.id} className="subtask-item">
+                                        <input
+                                            type="checkbox"
+                                            className="subtask-checkbox"
+                                            checked={subtask.completed}
+                                            onChange={() => handleToggleSubtask(subtask.id)}
+                                        />
+
+                                        {/* Dynamically apply the 'completed' class based on state */}
+                                        <span className={`subtask-text ${subtask.completed ? 'completed' : ''}`}>
+                                            {subtask.text}
+                                        </span>
+
+                                        <button
+                                            className="subtask-delete-btn"
+                                            onClick={() => handleDeleteSubtask(subtask.id)}
+                                            title="Delete subtask"
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <input
+                                type="text"
+                                className="sidebar-value subtask-input"
+                                placeholder="Add a subtask and press Enter..."
+                                value={newSubtaskText}
+                                onChange={(e) => setNewSubtaskText(e.target.value)}
+                                onKeyDown={handleAddSubtask}
+                            />
                         </div>
                     </div>
 
@@ -382,7 +463,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 </div>
                 {task?.updatedAt && (
                     <div className="modal-footer">
-                        <span className="timestamp">
+                        <span className="footer-label">
                             Last updated at: {formatTime(task.updatedAt)}
                         </span>
                     </div>
