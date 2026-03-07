@@ -73,6 +73,20 @@ function App() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
+  const issueIcons = {
+    "User Story": "📗",
+    "Bug": "🐞",
+    "Test": "🧪",
+    "Spike": "⏱️"
+  };
+
+  const formatTime = (ts) => {
+    if (!ts) return '';
+    return new Date(ts).toLocaleString([], {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+  };
+
   return (
     <div className="app-layout">
       <Sidebar
@@ -170,14 +184,48 @@ function App() {
               // Now the modal relies entirely on onClose() to close, leaving it safely open during inline edits.
             }}
           />
-          <DragOverlay>
+          <DragOverlay> {/*maintain card data during drag state*/}
             {activeTask ? (
               <div className="tilt-wrapper">
                 <div className={`task-card dragging-overlay priority-${activeTask.priority}`}>
                   <div className='task-content'>
-                    <span className='task-text'>{activeTask.text}</span>
-                  </div>
 
+                    {/* 1. Added Header (Assignee, Priority, Issue Type) */}
+                    <div className='task-header'>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        {activeTask.assignee && (
+                          <div className="assignee-avatar">
+                            {activeTask.assignee.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <span className={`priority-badge ${activeTask.priority || 'Medium'}`}>
+                          {(activeTask.priority || 'Medium').toUpperCase()}
+                        </span>
+                        <span>
+                          {issueIcons[activeTask.issueType || "User Story"]}
+                        </span>
+                      </div>
+                      <div>
+                        {/* Inert buttons to maintain spacing parity with the real card */}
+                        <button className='edit-btn' style={{ cursor: 'grabbing' }}>📄</button>
+                        <button className='delete-btn' style={{ cursor: 'grabbing' }}>x</button>
+                      </div>
+                    </div>
+
+                    {/* 2. Task Title */}
+                    <p className='task-text'>{activeTask.text || 'Untitled Task'}</p>
+
+                    {/* 3. Added Footer (Subtasks, Updated Time) */}
+                    <div className='task-footer' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className='footer-label'>
+                        {activeTask.subtasks?.length || 0} {activeTask.subtasks?.length === 1 ? 'Subtask' : 'Subtasks'}
+                      </span>
+                      <span className='footer-label'>
+                        Updated: {formatTime(activeTask.updatedAt)}
+                      </span>
+                    </div>
+
+                  </div>
                 </div>
               </div>
             ) : null}
