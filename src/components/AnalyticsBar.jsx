@@ -104,7 +104,6 @@ const AnalyticsBar = ({ columns }) => {
         <div>High Priority: <span>{highPriorityCount}</span></div>
         <div>Avg Cycle Time: <span style={{ color: cycleTimeColor }}>{avgCycleTimeDisplay}</span></div>
       </div>
-      
       <div className="progress-container">
         <div className="progress-track">
           <div 

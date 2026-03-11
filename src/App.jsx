@@ -163,26 +163,34 @@ function App() {
           <TaskModal
             isOpen={taskModalConfig.isOpen}
             task={taskModalConfig.task}
-            onClose={() => {
-              // We no longer need to run deleteTask here! 
-              // If they cancel, the draft just disappears.
-              closeTaskModal();
-            }}
-            onSave={(taskID, updatedTask) => {
-              // 1. Check if the task has already been inserted into the board during this session
+            onClose={() => closeTaskModal()}
+            onSave={(taskID, updatedTask, isClosing = false) => {
+              
               const currentColumn = columns.find(col => col.id === taskModalConfig.columnID);
               const taskAlreadyInserted = currentColumn?.tasks.some(t => t.id === taskID);
+              
+              // Check if this task was new when the modal opened
+              const isOriginallyNew = taskModalConfig.task?.isNew;
 
-              if (taskModalConfig.task?.isNew && !taskAlreadyInserted) {
-                // First save (e.g., hitting enter on the title) -> Insert it!
-                insertTask(taskModalConfig.columnID, { ...updatedTask, isNew: true });
+              if (isOriginallyNew && !taskAlreadyInserted) {
+                // First edit: Insert as a draft (or true if instantly closing)
+                insertTask(taskModalConfig.columnID, { 
+                    ...updatedTask, 
+                    isNew: isClosing ? true : 'draft' 
+                });
+              } else if (isOriginallyNew && taskAlreadyInserted) {
+                // Subsequent inline edits: Force it to stay a 'draft' until closing!
+                updateTask(taskModalConfig.columnID, taskID, { 
+                    ...updatedTask, 
+                    isNew: isClosing ? true : 'draft' 
+                });
               } else {
-                // Subsequent saves (e.g., saving description) -> Just update the existing task
-                updateTask(taskModalConfig.columnID, taskID, { ...updatedTask, isNew: false });
+                // Normal edits on existing old tasks
+                updateTask(taskModalConfig.columnID, taskID, { 
+                    ...updatedTask, 
+                    isNew: updatedTask.isNew 
+                });
               }
-
-              // 2. We removed closeTaskModal() from here! 
-              // Now the modal relies entirely on onClose() to close, leaving it safely open during inline edits.
             }}
           />
           <DragOverlay> {/*maintain card data during drag state*/}

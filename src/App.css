@@ -1633,7 +1633,7 @@ button.sidebar-value {
 .issue-icon-item {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     margin: 0 !important; /* Overrides the default margin-left on .analytics-stats span */
     color: #f1f5f9;
 }

@@ -119,7 +119,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 dueDate: currentDueDate ? currentDueDate.toISOString() : null,
                 environment: currentEnvironment,
                 subtasks: currentSubtasks
-            });
+            }, true);
             onClose(false);
         }
     }, [onClose, onSave]);
