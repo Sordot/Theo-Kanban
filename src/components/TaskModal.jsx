@@ -5,52 +5,8 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { getNextPriority } from "../hooks/useKanban";
 import { getNextEffort } from "../hooks/useKanban"
+import TipTapMenuBar from "./TipTapMenuBar";
 
-
-//The toolbar that sits above the tiptap editor
-const MenuBar = ({ editor }) => {
-    if (!editor) {
-        return null;
-    }
-
-    return (
-        <div className="tiptap-toolbar">
-            <button onClick={() => editor.chain().focus().toggleBold().run()} className={editor.isActive('bold') ? 'is-active' : ''}>
-                Bold
-            </button>
-            <button onClick={() => editor.chain().focus().toggleItalic().run()} className={editor.isActive('italic') ? 'is-active' : ''}>
-                Italic
-            </button>
-            <button onClick={() => editor.chain().focus().toggleStrike().run()} className={editor.isActive('strike') ? 'is-active' : ''}>
-                Strike
-            </button>
-
-            <div className="toolbar-divider"></div>
-
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}>
-                H1
-            </button>
-            <button onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}>
-                H2
-            </button>
-
-            <div className="toolbar-divider"></div>
-
-            <button onClick={() => editor.chain().focus().toggleBulletList().run()} className={editor.isActive('bulletList') ? 'is-active' : ''}>
-                Bullet List
-            </button>
-            <button onClick={() => editor.chain().focus().toggleOrderedList().run()} className={editor.isActive('orderedList') ? 'is-active' : ''}>
-                Numbered List
-            </button>
-            <button onClick={() => editor.chain().focus().toggleBlockquote().run()} className={editor.isActive('blockquote') ? 'is-active' : ''}>
-                Quote
-            </button>
-            <button onClick={() => editor.chain().focus().toggleCodeBlock().run()} className={editor.isActive('codeBlock') ? 'is-active' : ''}>
-                Code
-            </button>
-        </div>
-    );
-};
 
 export default function TaskModal({ isOpen, task, onClose, onSave }) {
 
@@ -374,7 +330,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                             {isEditingDescription ? (
                                 <div className="rich-text-editor">
                                     <div className="tiptap-wrapper">
-                                        <MenuBar editor={editor} />
+                                        <TipTapMenuBar editor={editor} />
                                         <EditorContent editor={editor} className="tiptap-container" />
                                     </div>
                                     <div className="editor-actions" style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
