@@ -1,16 +1,42 @@
-# React + Vite
+# 🪄 Kanban Wizard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Kanban Wizard** is a high-performance, enchanted task management application designed to turn project chaos into organized magic. Built with React and a focus on fluid user experience, it allows you to conjure, track, and master your workflows with ease.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **Multi-Board Sorcery**: Manage multiple distinct projects (Workspaces) from a single sidebar.
+-   **Dynamic Drag-and-Drop**: Move tasks across columns with smooth, hardware-accelerated transitions powered by `@dnd-kit`.
+-   **Deep Task Insight**: Every task is a "scroll" of information—track subtasks, assignees, priorities, and real-time "Last Updated" timestamps.
+-   **Integrated Analytics**: A real-time `AnalyticsBar` provides a birds-eye view of your project's health and distribution.
+-   **Theme Transmutation**: Instantly switch between **Dark** and **Light** modes to suit your environment.
+-   **Rich Text Enchantments**: A fully integrated Tiptap editor for task descriptions, supporting professional formatting.
 
-## React Compiler
+## 🛠️ Built With
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   **React** - The core engine.
+-   **@dnd-kit** - For the fluid drag-and-drop mechanics.
+-   **Lucide & FontAwesome Icons** - For clear visual metaphors.
+-   **CSS Modules/Variables** - For a deeply customizable and responsive UI.
 
-## Expanding the ESLint configuration
+## 🚀 Deployment
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The live version of the Wizard's workshop is available here:
+**[Your GitHub Pages Link Here]**
+
+## 📜 How to Run Locally
+
+1.  **Clone the Repository**
+    ```bash
+    git clone [https://github.com/Sordot/Kanban-Wizard.git](https://github.com/Sordot/Kanban-Wizard.git)
+    ```
+2.  **Install Dependencies**
+    ```bash
+    npm install
+    ```
+3.  **Start the Magic**
+    ```bash
+    npm run dev
+    ```
+
+---
+*Built with passion by **Theo Gevirtz**.*
