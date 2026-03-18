@@ -10,7 +10,7 @@ import {
 import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
-import { FaGithub, FaLinkedin } from 'react-icons/fa'
+import { FaGithub, FaLinkedin, FaSun, FaMoon } from 'react-icons/fa'
 import './App.css'
 import { useTheme } from './hooks/useTheme'
 import { useKanban } from './hooks/useKanban'

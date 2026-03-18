@@ -82,7 +82,7 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
                                 e.stopPropagation();
                                 onOpenModal(columnID, task);
                             }}>
-                            📄
+                            🔍
                         </button>
                         <button className='delete-btn'
                             onPointerDown={(e) => e.stopPropagation()}

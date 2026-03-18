@@ -20,24 +20,75 @@
 }
 
 /* light mode overrides */
-:root[data-theme="light"] {
-  --bg-color: #f8fafc;
-  --bg-gradient-top: #e2e8f0;
-  --bg-gradient-mid: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #94a3b8;
-  --sidebar-bg: rgba(255, 255, 255, 0.85);
-  --column-bg: rgba(255, 255, 255, 0.6);
-  --column-border: rgba(139, 92, 246, 0.3);
-  --column-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --accent-color: #7c3aed;
-  --card-bg: rgba(255, 255, 255, 0.8);
+/* :root[data-theme="light"] {
+  --bg-color: #d8dbe9; 
+  --bg-gradient-top: #c4c9dc;
+  --bg-gradient-mid: #d0d4e4;   
+  
+  --text-primary: #17182b;    
+  --text-secondary: #565b7a;  
+  
+  
+  --sidebar-bg: rgba(198, 204, 222, 0.85); 
+  --column-bg: rgba(232, 235, 245, 0.5);   
+  --column-border: rgba(139, 92, 246, 0.25); 
+  --column-shadow: 0 8px 32px rgba(23, 24, 43, 0.08); 
+  
+  
+  --accent-color: #7c3aed; 
+  --card-bg: rgba(238, 241, 248, 0.8);
+  
   --btn-green-bg: #10b981;
   --btn-green-hover: #059669;
-  --btn-green-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+  --btn-green-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
   --btn-red-bg: #ef4444;
   --btn-red-hover: #dc2626;
-  --btn-red-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  --btn-red-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+} */
+
+:root[data-theme="light"] {
+  /* Darkened base colors towards a slate/midnight indigo */
+  --bg-color: #b3bacf; 
+  --bg-gradient-top: #a3abc4;
+  --bg-gradient-mid: #acb3c9;   
+  
+  /* Deepened text for readability against the slightly darker slate */
+  --text-primary: #121322;    
+  --text-secondary: #484d6b;  
+  
+  /* Sidebar kept exactly as requested */
+  --sidebar-bg: rgba(198, 204, 222, 0.85); 
+  
+  /* Columns and cards stripped of their white values and shifted to deeper slate tones */
+  --column-bg: rgba(222, 226, 238, 0.55);   
+  --column-border: rgba(139, 92, 246, 0.25); 
+  --column-shadow: 0 8px 32px rgba(23, 24, 43, 0.12); /* Slightly stronger shadow for the darker bg */
+  
+  --accent-color: #7c3aed; 
+  --card-bg: rgba(235, 238, 245, 0.85); /* Matches the sidebar exactly for a cohesive layered look */
+  
+  --btn-green-bg: #10b981;
+  --btn-green-hover: #059669;
+  --btn-green-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  --btn-red-bg: #ef4444;
+  --btn-red-hover: #dc2626;
+  --btn-red-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+}
+
+/* Light mode overrides for priority text */
+:root[data-theme="light"] .High {
+    color: #c53030; 
+    font-weight: 800;
+}
+
+:root[data-theme="light"] .Medium {
+    color: #c05621; 
+    font-weight: 800;
+}
+
+:root[data-theme="light"] .Low {
+    color: #276749; 
+    font-weight: 800;
 }
 
 *, *::before, *::after {
@@ -69,12 +120,14 @@ body {
 
 .sidebar {
     min-width: 360px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: var(--sidebar-bg);
     backdrop-filter: blur(15px);
     border-right: 1px solid var(--accent-color);
-    padding: 32px 24px;
-    display: flex;
-    flex-direction: column;
+    /* padding: 32px 24px; */
+    padding: 40px 20px 10px;
     box-shadow: 4px 0 24px var(--bg-color);
 }
 
@@ -113,15 +166,16 @@ body {
 /* Indicates an element can be edited inline */
 .editable-field {
     padding: 6px 8px;
-    margin: -6px -8px; /* Offsets padding so it aligns with surrounding text */
+    margin: -6px -8px;
     border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    border: 1px solid transparent;
+    border: 1px dashed transparent;
+    transition: all 0.2s ease;      
 }
 
 .editable-field:hover {
     background-color: var(--bg-color);
+    border: 1px dashed var(--accent-color);
 }
 
 /* Ensure empty states still look clickable */
@@ -266,10 +320,38 @@ body {
     color: var(--text-primary);
 }
 
-.theme-toggle {
-    background: transparent;
-    border: none;
+.sidebar-footer {
+    padding: 14px 0px 10px 0px;
+    margin-top: auto; /* Ensures it stays at the bottom */
+    width: 100%;
+}
+
+.theme-toggle-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--column-border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    font-size: 12px;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+    background: var(--bg-color);
+    border-color: var(--accent-color);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn svg {
+    color: var(--accent-color);
 }
 
 .board-header {
@@ -649,7 +731,7 @@ body {
 .edit-input {
     width: 100%;
     background: var(--bg-color);
-    border: 1px solid var(--accent-color);
+    border: 1px solid transparent;
     border-radius: 8px;
     box-sizing: border-box;
     padding: 10px;
@@ -658,9 +740,10 @@ body {
     transition: all 0.2s ease;
 }
 
+.edit-input:hover,
 .edit-input:focus {
     outline: none;
-    box-shadow: 0 0 4px var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .edit-input.title {
@@ -1241,6 +1324,7 @@ span.sidebar-value {
 }
 
 .custom-field-add-btn:hover {
+    border: 1px solid transparent;
     box-shadow: 0px 0px 4px var(--accent-color);
 }
 
@@ -1758,7 +1842,7 @@ button.sidebar-value {
     text-align: left !important; /* Overrides any centered text from .sidebar-value */
     padding: 12px 14px !important;
     background: var(--bg-color) !important;
-    border: 1px dashed rgba(255, 255, 255, 0.1) !important; /* Dashed ghost border */
+    border: 1px dashed var(--text-secondary) !important;
     color: var(--text-primary);
     font-size: 14px;
     border-radius: 8px;
@@ -1768,7 +1852,7 @@ button.sidebar-value {
 .subtask-input:focus {
     outline: none;
     background: var(--bg-color) !important;
-    border-color: var(--accent-color) !important; /* Violet solid border on focus */
+    border-color: var(--accent-color) !important;
     
 }
 
