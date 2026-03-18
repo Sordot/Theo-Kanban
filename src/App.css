@@ -29,16 +29,15 @@
   --text-primary: #121322;    
   --text-secondary: #484d6b;  
   
-  /* Sidebar kept exactly as requested */
   --sidebar-bg: rgba(198, 204, 222, 0.85); 
   
   /* Columns and cards stripped of their white values and shifted to deeper slate tones */
-  --column-bg: rgba(222, 226, 238, 0.55);   
-  --column-border: rgba(139, 92, 246, 0.25); 
-  --column-shadow: 0 8px 32px rgba(23, 24, 43, 0.12); /* Slightly stronger shadow for the darker bg */
+  --column-bg: rgba(119, 123, 156, 0.55);   
+  --column-border: rgba(124, 58, 237, 0.35); 
+  --column-shadow: 0 12px 40px rgba(46, 43, 69, 0.18); /* Slightly stronger shadow for the darker bg */
   
   --accent-color: #7c3aed; 
-  --card-bg: rgba(235, 238, 245, 0.85); /* Matches the sidebar exactly for a cohesive layered look */
+  --card-bg: rgba(255, 255, 255, 0.92); /* Matches the sidebar exactly for a cohesive layered look */
   
   --btn-green-bg: #10b981;
   --btn-green-hover: #059669;
@@ -692,7 +691,6 @@ body {
 }
 
 .task-card:hover {
-    background: var(--bg-color);
     border-color: var(--accent-color);
 }
 
@@ -916,28 +914,6 @@ select.sidebar-value option {
     from { opacity: 0; transform: scale(0.98); }
     to { opacity: 1; transform: scale(1); }
 }
-
-/* .add-task-btn {
-    background: var(--bg-color);
-    color: var(--text-secondary);
-    border: 1px solid var(--column-border);
-    border-radius: 6px;
-    width: auto;
-    height: 32px;
-    padding: 0px 12px;
-    cursor: pointer;
-    font-size: 12px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-}
-
-.add-task-btn:hover {
-    border: 1px solid var(--accent-color);
-    color: var(--text-primary);
-} */
 
 .add-task-btn {
     background: transparent;
