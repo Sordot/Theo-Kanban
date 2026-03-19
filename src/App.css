@@ -1,16 +1,22 @@
+
 :root {
-  /* Dark Mode Colors */
-  --bg-color: #05050a;
-  --bg-gradient-top: #1e1b4b;
-  --bg-gradient-mid: #0a0a12;
-  --text-primary: #e2e8f0;
-  --text-secondary: #94a3b8;
-  --sidebar-bg: rgba(10, 10, 18, 0.85);
-  --column-bg: rgba(255, 255, 255, 0.01);
-  --column-border: rgba(139, 92, 246, 0.1);
+  /* Dark Mode Colors - Derived from #0073cf */
+  --bg-color: #001221;
+  --bg-gradient-top: #002647;
+  --bg-gradient-mid: #001b33;
+  --text-primary: #e6f2ff;
+  --text-secondary: #8cbce6;
+  --sidebar-bg: rgba(0, 18, 33, 0.85);
+  
+  /* Elements get progressively brighter through higher opacity overlays */
+  --column-bg: rgba(0, 115, 207, 0.06);
+  --column-border: rgba(0, 115, 207, 0.25);
   --column-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-  --accent-color: #8b5cf6;
-  --card-bg: rgba(30, 30, 50, 0.4);
+  --card-bg: rgba(0, 115, 207, 0.15);
+  
+  --accent-color: #0073cf;
+  
+  /* Unchanged Green/Red Buttons (They already fit well with this blue) */
   --btn-green-bg: #10b981;
   --btn-green-hover: #059669;
   --btn-green-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
@@ -20,24 +26,24 @@
 }
 
 :root[data-theme="light"] {
-  /* Darkened base colors towards a slate/midnight indigo */
-  --bg-color: #b3bacf; 
-  --bg-gradient-top: #a3abc4;
-  --bg-gradient-mid: #acb3c9;   
+  /* Light Mode Colors - Background is darkest, top elements are brightest */
+  --bg-color: #87b9e0; 
+  --bg-gradient-top: #9dc7e8;
+  --bg-gradient-mid: #92c0e4;   
   
-  /* Deepened text for readability against the slightly darker slate */
-  --text-primary: #121322;    
-  --text-secondary: #484d6b;  
+  /* Deepened text for readability against the blue background */
+  --text-primary: #001b33;    
+  --text-secondary: #003a6e;  
   
-  --sidebar-bg: rgba(198, 204, 222, 0.85); 
+  --sidebar-bg: rgba(135, 185, 224, 0.85); 
   
-  /* Columns and cards stripped of their white values and shifted to deeper slate tones */
-  --column-bg: rgba(119, 123, 156, 0.55);   
-  --column-border: rgba(124, 58, 237, 0.35); 
-  --column-shadow: 0 12px 40px rgba(46, 43, 69, 0.18); /* Slightly stronger shadow for the darker bg */
+  /* Columns and cards add white to become progressively brighter than the background */
+  --column-bg: rgba(255, 255, 255, 0.4);   
+  --column-border: rgba(0, 115, 207, 0.35); 
+  --column-shadow: 0 12px 40px rgba(0, 38, 71, 0.15); 
+  --card-bg: rgba(255, 255, 255, 0.85); 
   
-  --accent-color: #7c3aed; 
-  --card-bg: rgba(255, 255, 255, 0.92); /* Matches the sidebar exactly for a cohesive layered look */
+  --accent-color: #0073cf; 
   
   --btn-green-bg: #10b981;
   --btn-green-hover: #059669;
@@ -47,7 +53,7 @@
   --btn-red-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
-/* Light mode overrides for priority text */
+/* Light mode overrides for priority text (Included so you don't lose them) */
 :root[data-theme="light"] .High {
     color: #c53030; 
     font-weight: 800;
@@ -105,30 +111,34 @@ body {
 
 .sidebar-logo {
     display: flex;
-    align-items: center;
-    justify-content: flex-start; /* Aligns everything to the left edge */
-    gap: 4px;                   /* Creates natural space between the owl and text */
-    font-size: 16px;
+    flex-direction: column; /* Stacks the icon above the text */
+    align-items: center;    /* Centers everything horizontally */
+    justify-content: center;
+    gap: 8px;               /* Adds a clean space between the owl and the text */
+    font-size: 18px;        /* Slightly larger to anchor the sidebar */
     font-weight: 800;
     color: var(--text-primary);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em; /* A slightly wider letter spacing for a premium feel */
     margin-bottom: 48px;
+    margin-top: 12px;       /* Gives a little breathing room from the very top */
     padding-left: 0px;
     text-transform: uppercase;
     width: 100%;   
+    text-align: center;
 }
 
 .logo-icon {
-    width: 180px;    /* Scaled down so it can sit next to the text */
+    width: 100px;           
     height: auto;
     object-fit: contain;
     flex-shrink: 0;
-    margin-left: -36px;              /* Pull logo to the left */
-    filter: drop-shadow(0 0 4px var(--accent-color));
+    margin-left: 0;         
+    filter: drop-shadow(0 8px 16px rgba(0, 115, 207, 0.3));
+    transition: transform 0.3s ease;
 }
 
 .sidebar-logo span {
-    margin-left: -48px;
+    margin-left: 0;
     background: linear-gradient(135deg, var(--accent-color) 0%, var(--text-primary) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -265,6 +275,12 @@ body {
     transition: opacity 0.2s;
 }
 
+.delete-board-btn:hover {
+    background: var(--btn-red-bg);
+    color: #ffffff;
+    border-color: var(--btn-red-bg);
+}
+
 .board-item-wrapper:hover .delete-board-btn {
     opacity: 1;
 }
@@ -287,9 +303,10 @@ body {
 }
 
 .add-board-sidebar:hover {
-    background: var(--bg-color);
+    background: var(--accent-color);
     border-color: var(--accent-color);
-    color: var(--text-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 115, 207, 0.25);
 }
 
 .sidebar-footer {
@@ -881,13 +898,14 @@ select.sidebar-value option {
 
 .save-btn {
     background: var(--btn-green-bg);
-    color: var(--text-primary);
+    color: #ffffff;
     border: none;
     padding: 6px 16px;
     border-radius: 6px;
     font-weight: 600;
     cursor: pointer;
     transition: ease 0.2s;
+    box-shadow: var(--btn-green-shadow);
 }
 
 .save-btn:hover {
@@ -906,7 +924,7 @@ select.sidebar-value option {
 
 .cancel-btn:hover {
     border: 1px solid var(--accent-color);
-    background: var(--bg-color);
+    background: rgba(0, 115, 207, 0.1);
     color: var(--text-primary);
 }
 
@@ -932,9 +950,10 @@ select.sidebar-value option {
 
 /* Eye-catching hover state */
 .add-task-btn:hover {
-    background: var(--accent-color); /* Fills with violet on hover */
-    color: var(--text-primary);
+    background: var(--accent-color);
+    color: #ffffff;
     border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(0, 115, 207, 0.3);
 }
 
 .add-task-btn span {
@@ -996,36 +1015,6 @@ select.sidebar-value option {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 4px;
-}
-
-.delete-column-btn {
-     /* 1. Reset button defaults */
-    background: transparent;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    
-    /* 2. Set a fixed, compact size */
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-    
-    /* 3. Center the 'X' inside the 32px box */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    
-    /* 4. Refine look and feel */
-    color: var(--text-secondary);
-    font-size: 20px; /* Reduced from 28px */
-    font-weight: 400;
-    line-height: 1;
-    border-radius: 6px; /* Subtle rounding for the hover background */
-    transition: all 0.2s ease;
-}
-
-.delete-column-btn:hover {
-    color: var(--btn-red-hover);
 }
 
 .task-card.priority-High {

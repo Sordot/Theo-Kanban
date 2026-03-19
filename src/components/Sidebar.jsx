@@ -1,4 +1,4 @@
-import logoIcon from '../assets/Kanban-Owl-removebg-preview.png'
+import logoIcon from '../assets/Kanban-Wizard-removebg-preview.png'
 import { FaSun, FaMoon } from 'react-icons/fa';
 
 export default function Sidebar({ boards, activeBoardID, onSelectBoard, onAddBoard, onDeleteBoard, onRenameBoard, theme, toggleTheme }) {
