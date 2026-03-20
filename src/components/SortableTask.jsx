@@ -1,7 +1,6 @@
 import { memo, useEffect } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { getNextPriority } from '../hooks/useKanban';
 
 const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal }) => {
 
@@ -9,9 +8,16 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
     const isDeleting = task.isDeleting === true;
     const issueIcons = {
         "User Story": "📜",
-        "Bug": "🌀",
+        "Bug": "👻",
         "Test": "🔮",
         "Spike": "⌛"
+    };
+
+    const envIcons = {
+        "Dev": "🧙‍♂️",
+        "QA": "🕵",
+        "Staging": "🏗️",
+        "Production": "🏰"
     };
 
     // Keep the flash animation effect
@@ -40,11 +46,6 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
         })
     }
 
-    const cyclePriority = (e) => {
-        e.stopPropagation()
-        onUpdate(columnID, id, { ...task, priority: getNextPriority(task.priority) })
-    };
-
     const style = {
         transform: CSS.Translate.toString(transform),
         transition: transition,
@@ -59,28 +60,24 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
                 <div className='task-header'>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         {task.assignee && (
-                            <div
+                            <span
                                 className="assignee-avatar"
-                                title={`Assigned to ${task.assignee}`}
+                                data-tooltip={`${task.assignee}`}
                             >
                                 {task.assignee.charAt(0).toUpperCase()}
-                            </div>
+                            </span>
                         )}
-                        <span className={`priority-badge ${task.priority || 'Medium'}`}
-                            onPointerDown={(e) => e.stopPropagation()} onClick={cyclePriority}
-                            style={{ cursor: 'pointer' }}
-                            title={'Cycle priority'}
-                        >
-                            {(task.priority || 'Medium').toUpperCase()}
+                        <span className="task-card-issue-icon" data-tooltip={`${task.issueType}`}>
+                            {issueIcons[task.issueType || "📜"]}
                         </span>
-                        <span className="task-card-issue-icon" title={task.issueType || "User Story"}>
-                            {issueIcons[task.issueType || "User Story"]}
-                        </span>
+                        <span className="task-card-env-icon" data-tooltip={`${task.environment}`}>
+                                {envIcons[task.environment] || "🧙‍♂️"}
+                            </span>
                     </div>
                     <div>
                         <button
                             className='edit-btn'
-                            title={'Edit task'}
+                            data-tooltip={'Edit task'}
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -89,7 +86,7 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
                             🔍
                         </button>
                         <button className='delete-btn'
-                            title={'Delete task'}
+                            data-tooltip={'Delete task'}
                             onPointerDown={(e) => e.stopPropagation()}
                             onClick={(e) => { e.stopPropagation(); onDelete(columnID, id); }}>
                             ❌

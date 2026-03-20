@@ -1,5 +1,4 @@
 import logoIcon from '../assets/Kanban-Wizard-removebg-preview.png'
-import { FaSun, FaMoon } from 'react-icons/fa';
 
 export default function Sidebar({ boards, activeBoardID, onSelectBoard, onAddBoard, onDeleteBoard, onRenameBoard, onExportBoard, theme, toggleTheme }) {
 
@@ -38,13 +37,11 @@ export default function Sidebar({ boards, activeBoardID, onSelectBoard, onAddBoa
           <button className="theme-toggle-btn" onClick={toggleTheme}>
             {theme === 'dark' ? (
               <>
-                <FaSun size={12} />
-                <span>Light Mode</span>
+                <span>☀️ Light Mode</span>
               </>
             ) : (
               <>
-                <FaMoon size={12} />
-                <span>Dark Mode</span>
+                <span>🌑 Dark Mode</span>
               </>
             )}
           </button>

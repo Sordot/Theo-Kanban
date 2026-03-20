@@ -27,6 +27,20 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
     const [isEditingDescription, setIsEditingDescription] = useState(false)
     const [editingCustomFieldId, setEditingCustomFieldId] = useState(null)
 
+    const issueIcons = {
+        "User Story": "📜",
+        "Bug": "👻",
+        "Test": "🔮",
+        "Spike": "⌛"
+    };
+
+    const envIcons = {
+        "Dev": "🧙‍♂️",
+        "QA": "🕵",
+        "Staging": "🏗️",
+        "Production": "🏰"
+    };
+
     // Track the previous task ID to know when a new card is opened
     const [prevTaskId, setPrevTaskId] = useState(null);
 
@@ -452,10 +466,11 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                     onChange={handleIssueTypeChange}
                                     style={{ appearance: 'auto', cursor: 'pointer', width: '100%' }}
                                 >
-                                    <option value="User Story">User Story</option>
-                                    <option value="Bug">Bug</option>
-                                    <option value="Test">Test</option>
-                                    <option value="Spike">Spike</option>
+                                    {Object.entries(issueIcons).map(([label, icon]) => (
+                                        <option key={label} value={label}>
+                                            {icon} {label}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -501,10 +516,11 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                     onChange={handleEnvironmentChange}
                                     style={{ appearance: 'auto', cursor: 'pointer', width: '100%' }}
                                 >
-                                    <option value="Dev">Dev</option>
-                                    <option value="QA">QA</option>
-                                    <option value="Staging">Staging</option>
-                                    <option value="Production">Production</option>
+                                    {Object.entries(envIcons).map(([label, icon]) => (
+                                        <option key={label} value={label}>
+                                            {icon} {label}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>

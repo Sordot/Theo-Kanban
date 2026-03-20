@@ -491,6 +491,7 @@ button, input, textarea {
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -534,7 +535,7 @@ button, input, textarea {
     border-radius: 8px;
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 12px;
+    font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -763,7 +764,7 @@ button, input, textarea {
     border-left: 1px solid var(--glass-edge-left);
     border-radius: 12px;
     padding: 10px 16px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
     box-shadow: var(--column-shadow);
 }
 
@@ -776,7 +777,6 @@ button, input, textarea {
         inset 0 0 10px rgba(0, 115, 207, 0.2), 
         0 0 20px var(--nebula-glow-1),
         0 8px 24px rgba(0, 0, 0, 0.3);
-    transform: translateY(-1px);
 }
 
 .search-icon {
@@ -808,7 +808,6 @@ button, input, textarea {
   right: 10px;
   background: none;
   border: none;
-  color: #666;
   cursor: pointer;
 }
 
@@ -1032,6 +1031,10 @@ button, input, textarea {
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 340px);
+    z-index: 1;
+    position: relative;
+    overflow-y: auto;
+    /* overflow: visible !important; */
 }
 
 /* =========================================
@@ -1190,7 +1193,8 @@ button, input, textarea {
     flex-direction: column;
     flex-grow: 1;
     gap: 1rem;
-    padding: 10px 14px 30px 14px;
+    padding: 18px 18px 12px 18px;
+    margin-bottom: 8px;
     min-height: 100px;
     overflow-y: auto;
     overflow-x: visible;
@@ -1240,6 +1244,8 @@ button, input, textarea {
 }
 
 .task-card:hover {
+    overflow: visible !important; 
+    z-index: 999;
     background: rgba(255, 255, 255, 0.2);
     border-color: var(--accent-color);
     border-top: 1px solid var(--glass-edge-top);
@@ -1273,16 +1279,35 @@ button, input, textarea {
 
     cursor: help;
     overflow: hidden;
-    position: relative;
+    position: relative !important;
 }
 
-.assignee-avatar:hover {
-    border-color: var(--accent-color);
+.assignee-avatar[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sidebar-bg);
+    color: var(--text-primary);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-family: var(--font-magical);
+    white-space: nowrap;
+    z-index: 100;
+    border: 1px solid var(--accent-color);
+    box-shadow: var(--column-shadow);
 }
 
-.task-card-issue-icon {
+.task-card-issue-icon,
+.task-card-env-icon {
     cursor: help;
     font-size: 1rem;
+}
+
+.task-card-issue-icon:hover,
+.task-card-env-icon:hover {
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .task-header {
@@ -1290,6 +1315,7 @@ button, input, textarea {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 8px;
+    overflow: visible !important;
 }
 
 .task-text {
@@ -1407,7 +1433,7 @@ button, input, textarea {
 
 /* Midpoint Sparkle: 1.6rem size */
 .task-card.is-deleting::after {
-    content: "✨";
+    content: "";
     position: absolute;
     top: 45%;
     left: 50%;
@@ -1731,85 +1757,42 @@ select.sidebar-value option {
     box-shadow: 0 4px 15px rgba(52, 211, 153, 0.05);
 }
 
+/* custom tooltips for task icons to get around native html title hover delay and styles */
+[data-tooltip] {
+    position: relative;
+    cursor: help;
+}
 
-
-.priority-badge {
-    font-size: 0.65rem;
-    font-weight: bold;
-    padding: 3px 8px;
-    /* Slightly taller */
-    border: 1px solid transparent;
-    border-radius: 10px;
-    text-transform: uppercase;
+/* 2. Create the Tooltip Box */
+[data-tooltip]::after {
+    content: attr(data-tooltip); /* Grab the text from the data attribute */
+    position: absolute;
+    bottom: 120%; /* Float above the icon */
+    left: 50%;
+    transform: translateX(-50%);
+    
+    /* Magical Styling */
+    background: var(--sidebar-bg); /* Use your existing dark background */
     color: var(--text-primary);
-    display: inline-block;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    padding: 2px 6px;
+    border-radius: 6px;
+    border: 1px solid var(--accent-color);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    pointer-events: none; /* Make sure it doesn't block the mouse */
+    
+    /* The Speed Control */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.1s ease-in; /* Set this to 0s for truly instant */
+    z-index: 100;
 }
 
-
-.priority-badge.High {
-    background: rgba(255, 77, 77, 0.15);
-    color: #ff8080;
-    border: 1px solid rgba(255, 77, 77, 0.3);
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2);
-}
-
-
-.priority-badge.Medium {
-    background: rgba(251, 191, 36, 0.15);
-    color: #fcd34d;
-    border: 1px solid rgba(251, 191, 36, 0.3);
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    box-shadow: 0 2px 4px rgba(251, 191, 36, 0.15);
-}
-
-
-.priority-badge.Low {
-    background: rgba(52, 211, 153, 0.15);
-    color: #6ee7b7;
-    border: 1px solid rgba(52, 211, 153, 0.3);
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    box-shadow: 0 2px 4px rgba(52, 211, 153, 0.15);
-}
-
-/* --- Light Mode Priority Badges to prevent washout --- */
-:root[data-theme="light"] .priority-badge.High {
-    background: rgba(220, 38, 38, 0.15);
-    /* Deeper, richer red */
-    color: #b91c1c;
-    border: 1px solid rgba(220, 38, 38, 0.3);
-    /* Strong white top reflection, subtle dark bottom shadow for contrast */
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-:root[data-theme="light"] .priority-badge.Medium {
-    background: rgba(217, 119, 6, 0.15);
-    /* Deeper amber */
-    color: #b45309;
-    border: 1px solid rgba(217, 119, 6, 0.3);
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-:root[data-theme="light"] .priority-badge.Low {
-    background: rgba(5, 150, 105, 0.15);
-    /* Deeper green */
-    color: #047857;
-    border: 1px solid rgba(5, 150, 105, 0.3);
-    border-top: 1px solid var(--glass-edge-top);
-    border-left: 1px solid var(--glass-edge-left);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+/* 3. Reveal the Tooltip on Hover */
+[data-tooltip]:hover::after {
+    opacity: 1;
+    visibility: visible;
 }
 
 .modal-overlay {
@@ -2111,7 +2094,7 @@ select.sidebar-value option {
 }
 
 .sidebar-label-container {
-    flex: 0 0 90px;
+    flex: 0 0 85px;
     /* Locks the label to a fixed width. Adjust based on your longest label */
     color: var(--text-secondary);
     /* Using the slate color from your theme */
@@ -2134,6 +2117,12 @@ select.sidebar-value option {
     /* Ensures values sit left-aligned next to the label space */
     color: var(--text-primary);
     min-width: 0;
+}
+
+.sidebar-value-container select {
+    width: 100%;
+    padding: 4px 8px;
+    text-overflow: ellipsis; /* Adds '...' if text is still too long */
 }
 
 /* target custom field values specifically to make sure they dont overflow */
@@ -2859,8 +2848,8 @@ button.sidebar-value {
     justify-content: space-between;
     gap: 24px;
     color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .analytics-stats span {
@@ -2890,11 +2879,7 @@ button.sidebar-value {
     /* Overrides the default margin-left on .analytics-stats span */
     color: var(--text-primary);
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
-    cursor: pointer;
-}
-
-.issue-icon-item:hover {
-    filter: drop-shadow(0 0 5px var(--accent-color));
+    cursor: help;
 }
 
 
