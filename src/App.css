@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap');
+
 
 :root {
   /* Dark Mode Colors - Derived from #0073cf */
@@ -91,6 +93,32 @@
     font-weight: 800;
 }
 
+/* rays of light for the light theme background to match the stars for night mode */
+:root[data-theme="light"] body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background: conic-gradient(
+    from 90deg at -5% -5%, /* Origin slightly off-screen top-left */
+    transparent 0deg,
+    rgba(255, 255, 255, 0.2) 10deg,
+    transparent 15deg,
+    rgba(255, 255, 255, 0.3) 25deg, /* Brighter, wider beam */
+    transparent 35deg,
+    rgba(255, 255, 255, 0.2) 45deg,
+    transparent 50deg,
+    rgba(255, 255, 255, 0.1) 65deg, /* Medium beam */
+    transparent 75deg
+  );
+  background-size: 200% 200%;
+  background-position: 5% 5%;
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -118,7 +146,7 @@ body {
     background-attachment: fixed;
     min-height: 100vh;
     width: 100%;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Cinzel';
     color: var(--text-primary);
 }
 
@@ -127,6 +155,8 @@ body {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
+    position: relative; 
+    z-index: 1;
 }
 
 .sidebar {
@@ -465,48 +495,33 @@ body {
     font-weight: 800;
 }
 
-/* .dragging-overlay {
-    cursor: grabbing !important;
-    background: rgba(59, 130, 246, 0.2) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
-    border: 1px solid var(--accent-color) !important;
-    border-top: 1px solid var(--glass-edge-top) !important;
-    border-left: 1px solid var(--glass-edge-left) !important;
-    box-shadow: 
-        0 24px 48px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-    z-index: 9999;
-    pointer-events: none;
-} */
-
 .dragging-overlay {
     cursor: grabbing !important;
-    background: rgba(59, 130, 246, 0.2) !important;
-    backdrop-filter: blur(24px) !important;
-    -webkit-backdrop-filter: blur(24px) !important;
+    background: rgba(0, 115, 207, 0.15) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
     border: 1px solid var(--accent-color) !important;
     border-top: 1px solid var(--glass-edge-top) !important;
     border-left: 1px solid var(--glass-edge-left) !important;
     z-index: 9999;
     pointer-events: none;
-    /* Add levitation animation */
-    animation: levitateAura 2s infinite alternate ease-in-out;
+    animation: pulseGlow 1.2s infinite alternate ease-in-out;
 }
 
-@keyframes levitateAura {
+@keyframes pulseGlow {
     0% {
-        box-shadow: 0 24px 36px rgba(0, 0, 0, 0.5), 
-                    0 0 20px 5px rgba(124, 58, 237, 0.6), 
-                    0 0 0 2px rgba(255, 255, 255, 0.3) inset;
+        box-shadow: 
+            0 10px 20px rgba(0, 0, 0, 0.3), /* Base drop shadow */
+            0 0 15px 2px var(--accent-color), /* Tight, bright accent glow */
+            inset 0 0 0 1px rgba(255, 255, 255, 0.15); /* Glass edge */
     }
     100% {
-        box-shadow: 0 32px 48px rgba(0, 0, 0, 0.6), 
-                    0 0 40px 10px rgba(0, 115, 207, 0.8),
-                    0 0 0 2px rgba(255, 255, 255, 0.6) inset;
+        box-shadow: 
+            0 12px 24px rgba(0, 0, 0, 0.4), /* Shadow gets deeper as it "lifts" */
+            0 0 24px 8px var(--accent-color), /* Glow expands and softens */
+            inset 0 0 0 1px rgba(255, 255, 255, 0.3); /* Glass edge catches more light */
     }
 }
-
 
 .tilt-wrapper {
     transform: rotate(3deg) scale(1.02);
@@ -525,15 +540,15 @@ body {
     mask-image: linear-gradient(
         to right, 
         transparent, 
-        black 4%, 
-        black 96%, 
+        black 2%, 
+        black 98%, 
         transparent
     );
     -webkit-mask-image: linear-gradient(
         to right, 
         transparent, 
-        black 4%, 
-        black 96%, 
+        black 2%, 
+        black 98%, 
         transparent
     );
     overflow-x: auto;
@@ -673,6 +688,8 @@ body {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
+/* --- Column Dropdown Menu & Sub-Menu Styles --- */
+
 .column-dropdown-menu {
   position: absolute;
   right: 0;
@@ -684,7 +701,8 @@ body {
   z-index: 10;
   display: flex;
   flex-direction: column;
-  min-width: 140px;
+  min-width: max-content;
+  width: auto;
   box-shadow: 0 8px 24px var(--column-shadow);
 }
 
@@ -692,6 +710,7 @@ body {
   background: none;
   border: none;
   padding: 10px 16px;
+  white-space: nowrap;
   text-align: left;
   cursor: pointer;
   font-size: 0.9rem;
@@ -701,17 +720,57 @@ body {
   transition: all 0.2s ease;
 }
 
+.submenu-trigger {
+    position: relative;
+    width: 100%;
+}
+
+.submenu-btn {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center;
+    gap: 10px;
+}
+
+.submenu-content {
+    position: absolute;
+    /* 1. Position it to the LEFT of the main dropdown */
+    right: 100%; 
+    left: auto; 
+    top: -6px; /* Align slightly with the parent button */
+    
+    background: var(--bg-color);
+    border: 1px solid var(--column-border);
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: max-content; /* Container grows to fit the longest item */
+    width: auto;
+    box-shadow: 0 8px 24px var(--column-shadow);
+    z-index: 999;
+    margin-right: 4px;
+    display: flex;
+    flex-direction: column;
+    
+    /* Animation defaults (Hidden) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-10px);
+    transition: all 0.2s ease;
+}
+
+/* Reveal the sub-menu on hover */
+.submenu-trigger:hover .submenu-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0); /* Slide into place */
+}
+
 .column-dropdown-menu button:hover {
   background-color: var(--column-border);
 }
 
 .delete-column-option {
   color: var(--btn-red-bg) !important;
-}
-
-.delete-column-option:hover {
-  background-color: var(--column-bg) !important;
-  color: var(--btn-red-hover) !important;
 }
 
 .kanban-column {

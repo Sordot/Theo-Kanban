@@ -3,7 +3,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import DroppableContainer from './DroppableContainer'
 import SortableTask from "./SortableTask"
 
-export default function Column({ column, onAddTask, onDeleteTask, onUpdateTask, onUpdateColumn, onRemoveColumn, onOpenTaskModal }) {
+export default function Column({ column, onAddTask, onDeleteTask, onUpdateTask, onUpdateColumn, onClearColumn, onSortColumn, onRemoveColumn, onOpenTaskModal }) {
 
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [titleInput, setTitleInput] = useState(column.title);
@@ -72,11 +72,40 @@ export default function Column({ column, onAddTask, onDeleteTask, onUpdateTask, 
 
                         {isMenuOpen && (
                             <div className="column-dropdown-menu">
-                                <button onClick={() => { setIsEditingTitle(true); setIsMenuOpen(false); }}>
-                                    Rename
+                                {/* --- Sorting SUB-MENU TRIGGER --- */}
+                                <div className="submenu-trigger">
+                                    <button className="submenu-btn">
+                                        ↕️ Sort Tasks...
+                                    </button>
+
+                                    {/* --- Sorting SUB-MENU CONTENT --- */}
+                                    <div className="submenu-content">
+                                        <button onClick={() => { onSortColumn(column.id, 'newest'); setIsMenuOpen(false); }}>
+                                            ✨ Newest
+                                        </button>
+                                        <button onClick={() => { onSortColumn(column.id, 'oldest'); setIsMenuOpen(false); }}>
+                                            🕰️ Oldest
+                                        </button>
+                                        <button onClick={() => { onSortColumn(column.id, 'alpha'); setIsMenuOpen(false); }}>
+                                            📖 A-Z
+                                        </button>
+                                        <button onClick={() => { onSortColumn(column.id, 'effort'); setIsMenuOpen(false); }}>
+                                            ⚡ Effort
+                                        </button>
+                                        <button onClick={() => { onSortColumn(column.id, 'priority-desc'); setIsMenuOpen(false); }}>
+                                            🔥 Highest Priority
+                                        </button>
+                                        <button onClick={() => { onSortColumn(column.id, 'priority-asc'); setIsMenuOpen(false); }}>
+                                            🕯️ Lowest Priority
+                                        </button>
+                                    </div>
+                                </div>
+                                {/* ------------------------ */}
+                                <button className="clear-column-option" onClick={() => { onClearColumn(column.id); setIsMenuOpen(false); }}>
+                                    🔄 Clear Column
                                 </button>
                                 <button className="delete-column-option" onClick={() => { onRemoveColumn(column.id); setIsMenuOpen(false); }}>
-                                    Delete
+                                    💥 Delete Column
                                 </button>
                             </div>
                         )}

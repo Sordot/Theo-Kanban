@@ -52,6 +52,8 @@ function App() {
     updateTask,
     addColumn,
     updateColumn,
+    sortColumn,
+    clearColumn,
     modalConfig,
     openDeleteModal,
     openRenameModal,
@@ -128,7 +130,9 @@ function App() {
                 onAddTask={addTask}
                 onDeleteTask={(colId, taskId) => openDeleteModal('task', { columnID: colId, taskID: taskId })}
                 onUpdateTask={updateTask}
+                onSortColumn={sortColumn}
                 onUpdateColumn={updateColumn}
+                onClearColumn={clearColumn}
                 onRemoveColumn={() => openDeleteModal('column', { columnID: column.id })}
                 onOpenTaskModal={openTaskModal}
               />

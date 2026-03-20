@@ -8,13 +8,13 @@ export const getNextPriority = (currentPriority) => {
 };
 
 export const getNextEffort = (currentEffort) => {
-    const EFFORT_LEVELS = ["Small", "Medium", "Large", "X-Large"];
-    const currentIndex = EFFORT_LEVELS.indexOf(currentEffort);
-    // If not found or at the end of the list, loop back to the first item
-    if (currentIndex === -1 || currentIndex === EFFORT_LEVELS.length - 1) {
-        return EFFORT_LEVELS[0];
-    }
-    return EFFORT_LEVELS[currentIndex + 1];
+  const EFFORT_LEVELS = ["Small", "Medium", "Large", "X-Large"];
+  const currentIndex = EFFORT_LEVELS.indexOf(currentEffort);
+  // If not found or at the end of the list, loop back to the first item
+  if (currentIndex === -1 || currentIndex === EFFORT_LEVELS.length - 1) {
+    return EFFORT_LEVELS[0];
+  }
+  return EFFORT_LEVELS[currentIndex + 1];
 };
 
 export const useKanban = (initialData) => {
@@ -197,6 +197,70 @@ export const useKanban = (initialData) => {
     }));
   }, [activeBoardID]);
 
+  const clearColumn = useCallback((columnID) => {
+    setBoards(prevBoards => prevBoards.map(board => {
+      // Guardrail: only modify the active board
+      if (board.id !== activeBoardID) return board;
+
+      return {
+        ...board,
+        columns: board.columns.map(col => {
+          if (col.id === columnID) {
+            // Return the column with an empty tasks array
+            return { ...col, tasks: [] };
+          }
+          return col;
+        })
+      };
+    }));
+  }, [activeBoardID]);
+
+  const sortColumn = useCallback((columnID, sortType) => {
+    setBoards(prevBoards => prevBoards.map(board => {
+      // Guardrail: only modify the active board
+      if (board.id !== activeBoardID) return board;
+
+      return {
+        ...board,
+        columns: board.columns.map(col => {
+          if (col.id === columnID) {
+            // Create a copy of tasks to sort
+            const sortedTasks = [...col.tasks].sort((a, b) => {
+
+              // FIX: Use the native updatedAt property first! 
+              // Falls back to parsing the ID, then defaults to 0 for 't1'/'t2'
+              const timeA = a.updatedAt || parseInt(a.id.split('-')[1], 10) || 0;
+              const timeB = b.updatedAt || parseInt(b.id.split('-')[1], 10) || 0;
+
+              // Map priorities to numerical weights for sorting
+              const priorityWeight = { 'Low': 1, 'Medium': 2, 'High': 3 };
+              const effortWeight = { 'Small': 1, 'Medium': 2, 'Large': 3, 'X-Large': 4 };
+
+              switch (sortType) {
+                case 'newest':
+                  return timeB - timeA; // Higher (newer) timestamp first
+                case 'oldest':
+                  return timeA - timeB; // Lower (older) timestamp first
+                case 'alpha':
+                  return (a.text || "").localeCompare(b.text || "");
+                case 'effort':
+                  return (effortWeight[b.effort] || 0) - (effortWeight[a.effort] || 0);
+                case 'priority-desc':
+                  return (priorityWeight[b.priority] || 0) - (priorityWeight[a.priority] || 0);
+                case 'priority-asc':
+                  return (priorityWeight[a.priority] || 0) - (priorityWeight[b.priority] || 0);
+                default:
+                  return 0;
+              }
+            });
+            return { ...col, tasks: sortedTasks };
+          }
+          return col;
+        })
+      };
+    }));
+  }, [activeBoardID]);
+
   const removeColumn = (columnID) => {
     setBoards(prevBoards => prevBoards.map(board => {
       if (board.id !== activeBoardID) return board;
@@ -284,7 +348,7 @@ export const useKanban = (initialData) => {
           let newIndex = activeColumn.tasks.findIndex(task => task.id === overID);
           // FIX: If dropped in the empty space below tasks, push to the end
           if (newIndex === -1 && overID === overColumn.id) {
-              newIndex = activeColumn.tasks.length - 1;
+            newIndex = activeColumn.tasks.length - 1;
           }
 
           return {
@@ -294,7 +358,7 @@ export const useKanban = (initialData) => {
                 // FIX: Only run arrayMove if dropped over an actual task (newIndex !== -1)
                 // This hacky index check prevents the task card from snapping downward when moved between tasks
                 if (newIndex !== -1) {
-                    return { ...column, tasks: arrayMove(column.tasks, oldIndex, newIndex) };
+                  return { ...column, tasks: arrayMove(column.tasks, oldIndex, newIndex) };
                 }
               }
               return column;
@@ -333,16 +397,16 @@ export const useKanban = (initialData) => {
         const overIndex = overTasks.findIndex(t => t.id === overID);
         let newIndex;
         if (overIndex >= 0) {
-            // Check if active item is vertically below the over item's center
-            // helps to prevent task cards from shifting on letting go
-            const isBelowOverItem = over && active.rect.current.translated && 
-                active.rect.current.translated.top > over.rect.top + over.rect.height / 2;
-                
-            const modifier = isBelowOverItem ? 1 : 0;
-            newIndex = overIndex + modifier;
+          // Check if active item is vertically below the over item's center
+          // helps to prevent task cards from shifting on letting go
+          const isBelowOverItem = over && active.rect.current.translated &&
+            active.rect.current.translated.top > over.rect.top + over.rect.height / 2;
+
+          const modifier = isBelowOverItem ? 1 : 0;
+          newIndex = overIndex + modifier;
         } else {
-            // Dropped on empty column
-            newIndex = overTasks.length; 
+          // Dropped on empty column
+          newIndex = overTasks.length;
         }
 
         return {
@@ -384,6 +448,8 @@ export const useKanban = (initialData) => {
     deleteTask,
     addColumn,
     updateColumn,
+    clearColumn,
+    sortColumn,
     removeColumn,
     modalConfig,
     openDeleteModal,
