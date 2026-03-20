@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap');
 
 
 :root {
@@ -10,10 +10,13 @@
     --text-secondary: #8cbce6;
     --sidebar-bg: rgba(0, 18, 33, 0.85);
 
+    --font-magical: 'Cinzel', serif;
+    --font-professional: 'Lora', serif;
+
     /* Dark Mode Magic Background */
-    --magic-dust-1: rgba(255, 255, 255, 0.4);
-    --magic-dust-2: rgba(255, 255, 255, 0.2);
-    --magic-dust-3: rgba(255, 255, 255, 0.15);
+    --magic-dust-1: rgba(255, 255, 255, 0.45);
+    --magic-dust-2: rgba(255, 255, 255, 0.25);
+    --magic-dust-3: rgba(255, 255, 255, 0.2);
     --nebula-glow-1: rgba(0, 115, 207, 0.15);
     --nebula-glow-2: rgba(124, 58, 237, 0.12);
 
@@ -44,16 +47,8 @@
     --bg-gradient-top: #9dc7e8;
     --bg-gradient-mid: #92c0e4;
 
-    /* Light Mode Magic Background - Gold motes, bright white sparks, and deep blue specks */
-    --magic-dust-1: transparent;
-    /* Rich, deep amber/gold */
-    --magic-dust-2: transparent;
-    /* Stark, pure white */
-    --magic-dust-3: transparent;
-    /* Subtle deep blue contrast specks */
-    --nebula-glow-1: rgba(255, 255, 255, 0.6);
-    /* Brighter sunlight aura */
-    --nebula-glow-2: rgba(124, 58, 237, 0.15);
+    --font-magical: 'Cinzel', serif;
+    --font-professional: 'Lora', serif;
 
     /* Deepened text for readability against the blue background */
     --text-primary: #001b33;
@@ -62,10 +57,10 @@
     --sidebar-bg: rgba(135, 185, 224, 0.85);
 
     /* Columns and cards add white to become progressively brighter than the background */
-    --column-bg: rgba(255, 255, 255, 0.4);
+    --column-bg: rgba(255, 255, 255, 0.2);
     --column-border: rgba(0, 115, 207, 0.35);
-    --column-shadow: 0 12px 40px rgba(0, 38, 71, 0.15);
-    --card-bg: rgba(255, 255, 255, 0.3);
+    --column-shadow: 0 6px 15px rgba(0, 38, 71, 0.12);
+    --card-bg: rgba(255, 255, 255, 0.12);
 
     --accent-color: #0073cf;
 
@@ -77,8 +72,8 @@
     --btn-red-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 
     /* Glassmorphism Edge Opacities */
-    --glass-edge-top: rgba(255, 255, 255, 0.15);
-    --glass-edge-left: rgba(255, 255, 255, 0.08);
+    --glass-edge-top: rgba(255, 255, 255, 0.7);
+    --glass-edge-left: rgba(255, 255, 255, 0.3);
 }
 
 /* Light mode overrides for priority text (Included so you don't lose them) */
@@ -108,17 +103,17 @@
     pointer-events: none;
     z-index: 0;
     background: conic-gradient(from 90deg at -5% -5%,
-            /* Origin slightly off-screen top-left */
+            
             transparent 0deg,
             rgba(255, 255, 255, 0.2) 10deg,
             transparent 15deg,
             rgba(255, 255, 255, 0.3) 25deg,
-            /* Brighter, wider beam */
+            
             transparent 35deg,
             rgba(255, 255, 255, 0.2) 45deg,
             transparent 50deg,
             rgba(255, 255, 255, 0.1) 65deg,
-            /* Medium beam */
+            
             transparent 75deg);
     background-size: 200% 200%;
     background-position: 5% 5%;
@@ -138,7 +133,7 @@ body {
     margin: 0;
     padding: 0;
     background:
-        /* Slightly larger dust particles with harder edges */
+        /* magic dust */
         radial-gradient(1.5px 1.5px at 20px 30px, var(--magic-dust-1) 50%, rgba(0, 0, 0, 0)),
         radial-gradient(1.5px 1.5px at 60px 80px, var(--magic-dust-2) 50%, rgba(0, 0, 0, 0)),
         radial-gradient(2px 2px at 120px 40px, var(--magic-dust-3) 50%, rgba(0, 0, 0, 0)),
@@ -153,8 +148,23 @@ body {
     background-attachment: fixed;
     min-height: 100vh;
     width: 100%;
-    font-family: 'Cinzel';
+    font-family: var(--font-professional);
     color: var(--text-primary);
+}
+
+h1, h2, h3, h4, 
+.sidebar-logo, 
+.board-title-input, 
+.progress-text, 
+.analytics-stats span,
+.add-board-sidebar,
+.theme-toggle-btn {
+    font-family: var(--font-magical);
+    letter-spacing: 0.05em; /* Cinzel looks best with a little extra air */
+}
+
+button, input, textarea {
+    font-family: var(--font-professional);
 }
 
 .app-layout {
@@ -174,7 +184,7 @@ body {
     background: var(--sidebar-bg);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    border-right: 1px solid var(--accent-color);
     box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.02),
         4px 0 8px rgba(0, 0, 0, 0.2);
     padding: 40px 20px 10px;
@@ -495,7 +505,6 @@ body {
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
     color: var(--text-primary);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-footer {
@@ -695,23 +704,11 @@ body {
     justify-content: flex-start;
     gap: 1.5rem;
     width: 100%;
-    padding: 20px 40px;
-    max-width: 1400px;
+    padding: 20px 80px;
     max-height: 100%;
     margin-bottom: 12px;
-    mask-image: linear-gradient(to right,
-            transparent,
-            black 2%,
-            black 98%,
-            transparent);
-    -webkit-mask-image: linear-gradient(to right,
-            transparent,
-            black 2%,
-            black 98%,
-            transparent);
     overflow-x: auto;
     overflow-y: hidden;
-    contain: content;
     scroll-behavior: smooth;
 }
 
@@ -731,7 +728,7 @@ body {
 }
 
 .kanban-board::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+    background: var(--accent-color);
 }
 
 .column-header {
@@ -958,7 +955,6 @@ body {
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 340px);
-    will-change: transform, opacity;
 }
 
 /* =========================================
@@ -1117,10 +1113,10 @@ body {
     flex-direction: column;
     flex-grow: 1;
     gap: 1rem;
-    padding: 10px 14px 30px 0px;
+    padding: 10px 14px 30px 14px;
     min-height: 100px;
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: visible;
     max-height: calc(100vh - 340px);
 }
 
@@ -1129,7 +1125,7 @@ body {
 }
 
 .task-list::-webkit-scrollbar-track {
-    background: var(--bg-color);
+    background: transparent;
     border-radius: 10px;
 }
 
@@ -1150,8 +1146,6 @@ body {
     min-height: 100px;
     padding: 8px;
     background: var(--card-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--column-border);
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
@@ -1160,8 +1154,8 @@ body {
     position: relative;
     overflow: hidden;
     cursor: grab;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    isolation: isolate;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .task-card:active {
@@ -1169,29 +1163,48 @@ body {
 }
 
 .task-card:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.2);
     border-color: var(--accent-color);
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
     color: var(--text-primary);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .assignee-avatar {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--column-border);
+    border-top: 1px solid var(--glass-edge-top);
+    border-left: 1px solid var(--glass-edge-left);
     border-radius: 50%;
-    background: var(--accent-color);
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     color: var(--text-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: 800;
-    box-shadow: 0 0 8px var(--column-shadow);
+    box-shadow: 0 0 10px rgba(0, 115, 207, 0.2), 
+                inset 0 0 8px var(--nebula-glow-1);
+    
+    /* Typography for Initials */
+    font-family: var(--font-magical);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-shadow: 0 0 5px var(--accent-color);
+
+    cursor: help;
+    overflow: hidden;
+    position: relative;
+}
+
+.assignee-avatar:hover {
+    border-color: var(--accent-color);
 }
 
 .task-card-issue-icon {
+    cursor: help;
     font-size: 1rem;
 }
 
@@ -1524,8 +1537,8 @@ select.sidebar-value option {
 
 .add-task-btn {
     background: var(--card-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--column-border);
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
@@ -1539,16 +1552,17 @@ select.sidebar-value option {
     align-items: center;
     gap: 6px;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 0 12px rgba(0, 115, 207, 0.2);
 }
 
 .add-task-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
+    /* background: rgba(255, 255, 255, 0.08); */
+    background: rgba(0, 115, 207, 0.35);
     border-color: var(--accent-color);
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
     color: var(--text-primary);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .add-task-btn span {
@@ -1601,7 +1615,6 @@ select.sidebar-value option {
     border-top: 1px solid var(--glass-edge-top);
     border-left: 1px solid var(--glass-edge-left);
     color: var(--text-primary);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
 }
 
 .add-column-editor {
@@ -1646,6 +1659,7 @@ select.sidebar-value option {
     font-weight: bold;
     padding: 3px 8px;
     /* Slightly taller */
+    border: 1px solid transparent;
     border-radius: 10px;
     text-transform: uppercase;
     color: var(--text-primary);
@@ -1653,6 +1667,7 @@ select.sidebar-value option {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
+
 
 .priority-badge.High {
     background: rgba(255, 77, 77, 0.15);
@@ -1663,6 +1678,7 @@ select.sidebar-value option {
     box-shadow: 0 2px 4px rgba(255, 77, 77, 0.2);
 }
 
+
 .priority-badge.Medium {
     background: rgba(251, 191, 36, 0.15);
     color: #fcd34d;
@@ -1671,6 +1687,7 @@ select.sidebar-value option {
     border-left: 1px solid var(--glass-edge-left);
     box-shadow: 0 2px 4px rgba(251, 191, 36, 0.15);
 }
+
 
 .priority-badge.Low {
     background: rgba(52, 211, 153, 0.15);
@@ -2210,9 +2227,11 @@ span.sidebar-value {
     color: #ff8080;
 }
 
-.sidebar-value.High:hover {
-    background: rgba(255, 77, 77, 0.08);
-    border-color: rgba(255, 77, 77, 0.3);
+.sidebar-value.High:hover,
+.sidebar-value.High:focus,
+.sidebar-value.High:active {
+    background: rgba(255, 77, 77, 0.08) !important;
+    border-color: rgba(255, 77, 77, 0.3) !important;
 }
 
 /* Medium Priority (Subdued Amber) */
@@ -2220,9 +2239,11 @@ span.sidebar-value {
     color: #fcd34d;
 }
 
-.sidebar-value.Medium:hover {
-    background: rgba(251, 191, 36, 0.08);
-    border-color: rgba(251, 191, 36, 0.3);
+.sidebar-value.Medium:hover,
+.sidebar-value.Medium:focus,
+.sidebar-value.Medium:active {
+    background: rgba(251, 191, 36, 0.08) !important;
+    border-color: rgba(251, 191, 36, 0.3) !important;
 }
 
 /* Low Priority (Subdued Green) */
@@ -2230,9 +2251,11 @@ span.sidebar-value {
     color: #6ee7b7;
 }
 
-.sidebar-value.Low:hover {
-    background: rgba(52, 211, 153, 0.08);
-    border-color: rgba(52, 211, 153, 0.3);
+.sidebar-value.Low:hover,
+.sidebar-value.Low:focus,
+.sidebar-value.Low:active {
+    background: rgba(52, 211, 153, 0.08) !important;
+    border-color: rgba(52, 211, 153, 0.3) !important;
 }
 
 /* Fix default button styles since we are applying sidebar-value to a <button> */
@@ -2317,6 +2340,14 @@ button.sidebar-value {
     transition: all 0.3s ease;
     min-height: 0;
 
+}
+
+.section-label {
+    color: var(--text-primary);
+    font-size: 14px;
+    text-align: left;
+    padding-left: 8px;
+    margin-bottom: 8px;
 }
 
 .description-section {
@@ -2816,7 +2847,7 @@ button.sidebar-value {
 
 .progress-bar:hover .progress-fill {
     background-position: 100% 50%;
-    box-shadow: 0 0 20px var(--accent-color), 0 0 35px var(--nebula-glow-1);
+    box-shadow: 0 0 8px var(--accent-color), 0 0 12px var(--nebula-glow-1);
 }
 
 

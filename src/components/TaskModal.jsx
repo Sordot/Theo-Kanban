@@ -325,7 +325,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                 <div className="task-modal-body">
                     <div className="task-main-content">
                         <div className="description-section">
-                            <h3 className="section-label" style={{ marginBottom: '8px', color: '#5e6c84', fontSize: '14px', textAlign: 'left', paddingLeft: '8px' }}>Key Details</h3>
+                            <h3 className="section-label">Key Details</h3>
 
                             {isEditingDescription ? (
                                 <div className="rich-text-editor">
@@ -378,7 +378,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                             onClick={() => handleDeleteSubtask(subtask.id)}
                                             title="Delete subtask"
                                         >
-                                            ✕
+                                            ❌
                                         </button>
                                     </div>
                                 ))}
@@ -542,7 +542,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                         onClick={() => handleRemoveCustomField(cf.id)}
                                         title="Remove field"
                                     >
-                                        ✕
+                                        ❌
                                     </button>
                                 </div>
                             </div>
@@ -588,7 +588,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
                                             title="Remove field"
                                             style={{ opacity: 1, position: 'relative' }}
                                         >
-                                            ✕
+                                            ❌
                                         </button>
                                     </div>
                                 ))}
