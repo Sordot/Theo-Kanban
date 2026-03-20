@@ -465,20 +465,46 @@ body {
     font-weight: 800;
 }
 
+/* .dragging-overlay {
+    cursor: grabbing !important;
+    background: rgba(59, 130, 246, 0.2) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+    border: 1px solid var(--accent-color) !important;
+    border-top: 1px solid var(--glass-edge-top) !important;
+    border-left: 1px solid var(--glass-edge-left) !important;
+    box-shadow: 
+        0 24px 48px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+    z-index: 9999;
+    pointer-events: none;
+} */
+
 .dragging-overlay {
     cursor: grabbing !important;
     background: rgba(59, 130, 246, 0.2) !important;
     backdrop-filter: blur(24px) !important;
     -webkit-backdrop-filter: blur(24px) !important;
     border: 1px solid var(--accent-color) !important;
-    /* High-contrast glass edge for picked up item */
     border-top: 1px solid var(--glass-edge-top) !important;
     border-left: 1px solid var(--glass-edge-left) !important;
-    box-shadow: 
-        0 24px 48px rgba(0, 0, 0, 0.5), /* Deepest shadow underneath */
-        0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
     z-index: 9999;
     pointer-events: none;
+    /* Add levitation animation */
+    animation: levitateAura 2s infinite alternate ease-in-out;
+}
+
+@keyframes levitateAura {
+    0% {
+        box-shadow: 0 24px 36px rgba(0, 0, 0, 0.5), 
+                    0 0 20px 5px rgba(124, 58, 237, 0.6), 
+                    0 0 0 2px rgba(255, 255, 255, 0.3) inset;
+    }
+    100% {
+        box-shadow: 0 32px 48px rgba(0, 0, 0, 0.6), 
+                    0 0 40px 10px rgba(0, 115, 207, 0.8),
+                    0 0 0 2px rgba(255, 255, 255, 0.6) inset;
+    }
 }
 
 
