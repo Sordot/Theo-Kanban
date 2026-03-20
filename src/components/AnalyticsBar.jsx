@@ -53,14 +53,15 @@ const AnalyticsBar = ({ columns }) => {
         </div>
         <div>High Priority: <span>{highPriorityCount}</span></div>
       </div>
-      <div className="progress-container">
-        <div className="progress-track">
+      <div className="progress-bar-container">
+        <div className="mana-tube-glass">
           <div
-            className="progress-fill"
+            className="mana-liquid"
             style={{ width: `${progressPercent}%` }}
-          ></div>
+          >
+          </div>
         </div>
-        <div className="progress-text">{progressPercent}%</div>
+        <span className="progress-text">{progressPercent}% Done</span>
       </div>
     </div>
   );
