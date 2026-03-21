@@ -30,7 +30,14 @@ export const useKanban = (initialData) => {
   const columns = activeBoard ? activeBoard.columns : []
 
 
-  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    text: '',
+    priority: '',
+    issueType: '',
+    effort: '',
+    environment: '',
+    assignee: ''
+  });
   const [activeTask, setActiveTask] = useState(null)
 
   const [isAddingColumn, setIsAddingColumn] = useState(false)
@@ -102,66 +109,66 @@ export const useKanban = (initialData) => {
 
   //Export board logic
   const exportBoard = useCallback(async () => {
-  const boardToExport = boards.find(b => b.id === activeBoardID);
-  if (!boardToExport) return;
+    const boardToExport = boards.find(b => b.id === activeBoardID);
+    if (!boardToExport) return;
 
-  // 1. Data Cleaning
-  const cleanBoard = {
-    ...boardToExport,
-    columns: boardToExport.columns.map(col => ({
-      ...col,
-      isDeleting: false,
-      isNew: false,
-      tasks: col.tasks.map(task => ({
-        ...task,
+    // 1. Data Cleaning
+    const cleanBoard = {
+      ...boardToExport,
+      columns: boardToExport.columns.map(col => ({
+        ...col,
         isDeleting: false,
-        isNew: false
+        isNew: false,
+        tasks: col.tasks.map(task => ({
+          ...task,
+          isDeleting: false,
+          isNew: false
+        }))
       }))
-    }))
-  };
+    };
 
-  const dataStr = JSON.stringify(cleanBoard, null, 2);
-  const fileName = `${boardToExport.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_grimoire.json`;
+    const dataStr = JSON.stringify(cleanBoard, null, 2);
+    const fileName = `${boardToExport.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_grimoire.json`;
 
-  // 2. The Modern "Scribe's Pact" (File System Access API)
-  try {
-    // Check if the browser supports the API
-    if ('showSaveFilePicker' in window) {
-      const handle = await window.showSaveFilePicker({
-        suggestedName: fileName,
-        types: [{
-          description: 'JSON Grimoire File',
-          accept: { 'application/json': ['.json'] },
-        }],
-      });
+    // 2. The Modern "Scribe's Pact" (File System Access API)
+    try {
+      // Check if the browser supports the API
+      if ('showSaveFilePicker' in window) {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileName,
+          types: [{
+            description: 'JSON Grimoire File',
+            accept: { 'application/json': ['.json'] },
+          }],
+        });
 
-      // Create a FileSystemWritableFileStream to write to.
-      const writable = await handle.createWritable();
-      
-      // Write the contents of our file to the stream.
-      await writable.write(dataStr);
-      
-      // Close the file and write the contents to disk.
-      await writable.close();
-      
-      console.log("Successfully crystallized the grimoire to disk.");
-    } else {
-      // 3. Fallback: The Anchor Ritual (For Safari/Older Browsers)
-      const blob = new Blob([dataStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileName;
-      link.click();
-      URL.revokeObjectURL(url);
+        // Create a FileSystemWritableFileStream to write to.
+        const writable = await handle.createWritable();
+
+        // Write the contents of our file to the stream.
+        await writable.write(dataStr);
+
+        // Close the file and write the contents to disk.
+        await writable.close();
+
+        console.log("Successfully crystallized the grimoire to disk.");
+      } else {
+        // 3. Fallback: The Anchor Ritual (For Safari/Older Browsers)
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      // Handle user cancellation or errors
+      if (err.name !== 'AbortError') {
+        console.error("The ritual failed:", err);
+      }
     }
-  } catch (err) {
-    // Handle user cancellation or errors
-    if (err.name !== 'AbortError') {
-      console.error("The ritual failed:", err);
-    }
-  }
-}, [boards, activeBoardID]);
+  }, [boards, activeBoardID]);
 
   const addTask = (inputColumnID) => {
     //get unique task id
@@ -239,33 +246,60 @@ export const useKanban = (initialData) => {
     }, 1000); // 1000ms delay
   }, [activeBoardID, updateTask]);
 
+  // Helper to check if any filters are active (i.e. if they arent empty strings)
+  const hasActiveFilters = filters.text.trim() !== '' || filters.priority !== '' ||
+    filters.issueType !== '' || filters.effort !== '' ||
+    filters.environment !== '' || filters.assignee !== '';
+
+  // 2. DYNAMICALLY EXTRACT UNIQUE ASSIGNEES
+  // This looks at all tasks and builds an alphabetical list of anyone assigned to a task
+  const uniqueAssignees = useMemo(() => {
+    const assignees = new Set();
+    columns.forEach(col => {
+        col.tasks.forEach(task => {
+            if (task.assignee && task.assignee.trim() !== "") {
+                assignees.add(task.assignee.trim());
+            }
+        });
+    });
+    return Array.from(assignees).sort(); // Sort alphabetically for a clean dropdown
+  }, [columns]);  
+
   const filteredColumns = useMemo(() => {
-    // If there is no search, return columns as normal (status: 'none')
-    if (!searchTerm.trim()) {
-      return columns.map(col => ({
-        ...col,
-        tasks: col.tasks.map(task => ({ ...task, searchStatus: 'none' }))
-      }));
+    if (!hasActiveFilters) {
+        return columns.map(col => ({
+          ...col,
+          tasks: col.tasks.map(task => ({ ...task, searchStatus: 'none' }))
+        }));
     }
 
-    const lowerSearch = searchTerm.toLowerCase();
-    
-    // If searching, keep ALL tasks but tag them as 'matched' or 'obscured'
-    return columns.map(col => ({
-      ...col,
-      tasks: col.tasks.map(task => {
-        // You can add more fields here like task.assignee if you want!
-        const isMatch = 
-          (task.text && task.text.toLowerCase().includes(lowerSearch)) ||
+    const lowerSearch = filters.text.toLowerCase();
+
+    return columns.map(column => ({
+      ...column,
+      tasks: column.tasks.map(task => {
+        const matchesText = !filters.text.trim() || 
+          (task.text && task.text.toLowerCase().includes(lowerSearch)) || 
           (task.description && task.description.toLowerCase().includes(lowerSearch));
           
+        const matchesPriority = !filters.priority || task.priority === filters.priority;
+        const matchesIssueType = !filters.issueType || task.issueType === filters.issueType;
+        const matchesEffort = !filters.effort || task.effort === filters.effort;
+        const matchesEnvironment = !filters.environment || task.environment === filters.environment;
+        
+        // 3. Add the Assignee match check
+        const matchesAssignee = !filters.assignee || task.assignee === filters.assignee;
+
+        // 4. Require the assignee to match 
+        const isMatch = matchesText && matchesPriority && matchesIssueType && matchesEffort && matchesEnvironment && matchesAssignee;
+
         return { 
-          ...task, 
-          searchStatus: isMatch ? 'matched' : 'obscured' 
+            ...task, 
+            searchStatus: isMatch ? 'matched' : 'obscured' 
         };
       })
     }));
-  }, [columns, searchTerm]);
+  }, [columns, filters, hasActiveFilters]);
 
   const addColumn = () => {
     const title = newColumnTitle.trim()
@@ -561,8 +595,9 @@ export const useKanban = (initialData) => {
     updateTask,
     deleteTask,
     filteredColumns,
-    searchTerm,
-    setSearchTerm,
+    filters,
+    setFilters,
+    uniqueAssignees,
     addColumn,
     updateColumn,
     clearColumn,

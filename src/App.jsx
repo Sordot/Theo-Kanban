@@ -15,7 +15,7 @@ import { FaGithub, FaLinkedin, FaSun, FaMoon } from 'react-icons/fa'
 import './App.css'
 import { useTheme } from './hooks/useTheme'
 import { useKanban } from './hooks/useKanban'
-import SearchBar from './components/SearchBar'
+import FilterBar from './components/FilterBar'
 import Column from './components/Column'
 import ConfirmationModal from './components/ConfirmationModal'
 import Sidebar from './components/Sidebar'
@@ -53,8 +53,9 @@ function App() {
     insertTask,
     updateTask,
     filteredColumns,
-    searchTerm,
-    setSearchTerm,
+    filters,
+    setFilters,
+    uniqueAssignees,
     addColumn,
     updateColumn,
     sortColumn,
@@ -127,7 +128,7 @@ function App() {
       />
       <div className='kanban-container'>
         <div className="board-header-actions">
-           <SearchBar value={searchTerm} onChange={setSearchTerm} />
+           <FilterBar filters={filters} setFilters={setFilters} uniqueAssignees={uniqueAssignees} />
         </div>
         <DndContext sensors={sensors} collisionDetection={customCollisionDetection} onDragOver={handleDragOver} onDragEnd={handleDragEnd} onDragStart={handleDragStart}>
           <div className='kanban-board'>
