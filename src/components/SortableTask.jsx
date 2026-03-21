@@ -60,12 +60,15 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
                 <div className='task-header'>
                     <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                         {task.assignee && (
+                            // hacky fix to ensure assignee avatar can keep its overflow hidden for its circular shape while still having tooltip
+                            <div data-tooltip={`${task.assignee}`} style={{ display:'inline-flex'}}>
                             <span
                                 className="assignee-avatar"
                                 data-tooltip={`${task.assignee}`}
                             >
                                 {task.assignee.charAt(0).toUpperCase()}
                             </span>
+                            </div>
                         )}
                         <span className="task-card-issue-icon" data-tooltip={`${task.issueType}`}>
                             {issueIcons[task.issueType || "📜"]}

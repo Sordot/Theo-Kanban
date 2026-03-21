@@ -48,7 +48,10 @@ export default function Column({ column, onAddTask, onDeleteTask, onUpdateTask, 
     };
 
     return (
-        <div className={`kanban-column ${column.isDeleting ? 'is-deleting' : ''} ${column.isNew ? 'is-new' : ''}`} key={column.id}>
+        <div className={`kanban-column ${column.isDeleting ? 'is-deleting' : ''} ${column.isNew ? 'is-new' : ''}`} 
+            key={column.id}
+            style={{ overflow: column.isNew ? 'hidden' : undefined }}
+            >
             <div className="column-header">
                 <div className="column-title-container">
                     {isEditingTitle ? (
