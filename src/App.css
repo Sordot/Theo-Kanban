@@ -1102,24 +1102,43 @@ button, input, textarea {
 
 .empty-column-placeholder {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    padding: 24px 20px;
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px dashed var(--column-border);
-    border-radius: 12px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
+    align-items: center;
+    padding: 8px;
+    width: 100%;
+    min-height: 100px;
+    box-sizing: border-box;
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px dashed var(--column-border); 
+    border-radius: 8px;
+    
+    /* Slight inset shadow makes it look like a recessed slot */
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1); 
+    transition: all 0.3s ease;
+}
+
+.empty-column-placeholder h4 {
+    margin: 0;
+    color: var(--text-primary);
+    font-family: var(--font-professional); 
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    opacity: 0.7;
+}
+
+/* glow when the user hovers over the empty space */
+.empty-column-placeholder:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--accent-color);
+    box-shadow: inset 0 0 15px var(--nebula-glow-1);
 }
 
 .column-footer {
-
     margin-top: auto;
-
-
     padding: 2px 2px;
-
     display: flex;
     justify-content: flex-end;
     align-items: center;

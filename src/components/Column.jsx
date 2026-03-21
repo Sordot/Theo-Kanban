@@ -150,14 +150,15 @@ export default function Column({ column, onAddTask, onDeleteTask, onUpdateTask, 
                 </div>
             </div>
 
-            {column.tasks.length === 0 && (
-                <div className="empty-column-placeholder">
-                    <h4>No tasks here yet.</h4>
-                </div>
-            )}
+
 
             <SortableContext id={column.id} items={column.tasks.map(task => task.id)} strategy={verticalListSortingStrategy}>
                 <DroppableContainer id={column.id} className="task-list">
+                    {column.tasks.length === 0 && (
+                        <div className="empty-column-placeholder">
+                            <h4>No tasks here yet.</h4>
+                        </div>
+                    )}
                     {column.tasks.map((task) => (
                         <SortableTask
                             key={task.id}
