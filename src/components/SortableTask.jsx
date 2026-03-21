@@ -8,7 +8,7 @@ const SortableTask = memo(({ id, task, columnID, onDelete, onUpdate, onOpenModal
     const isDeleting = task.isDeleting === true;
     const issueIcons = {
         "User Story": "📜",
-        "Bug": "👻",
+        "Bug": "🦠",
         "Test": "🔮",
         "Spike": "⌛"
     };

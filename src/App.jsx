@@ -88,7 +88,7 @@ function App() {
 
   const issueIcons = {
         "User Story": "📜",
-        "Bug": "👻",
+        "Bug": "🦠",
         "Test": "🔮",
         "Spike": "⌛"
     };

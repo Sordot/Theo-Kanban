@@ -2,7 +2,7 @@ import React from 'react';
 
 const issueIcons = {
   "User Story": "📜",
-  "Bug": "👻",
+  "Bug": "🦠",
   "Test": "🔮",
   "Spike": "⌛"
 };

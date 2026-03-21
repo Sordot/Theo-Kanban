@@ -29,7 +29,7 @@ export default function TaskModal({ isOpen, task, onClose, onSave }) {
 
     const issueIcons = {
         "User Story": "📜",
-        "Bug": "👻",
+        "Bug": "🦠",
         "Test": "🔮",
         "Spike": "⌛"
     };
